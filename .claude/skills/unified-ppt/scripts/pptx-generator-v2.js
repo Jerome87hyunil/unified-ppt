@@ -9,7 +9,8 @@ const {
   addDivider,
   addSectionBadge,
   addStyledBullet,
-  applyTypography
+  applyTypography,
+  calculateAdaptiveTypography
 } = require('./visual-helpers');
 const {
   applyStandardLayout,
@@ -88,8 +89,19 @@ function createContentSlide(pptx, props, theme) {
   // Apply standard layout
   const { contentArea } = applyStandardLayout(slide, props.title, theme);
 
-  // Content body
+  // Content body with adaptive typography
   const bodyText = Array.isArray(props.body) ? props.body.join('\n\n') : props.body;
+
+  // Apply adaptive typography for long content
+  const adaptedTypography = calculateAdaptiveTypography(
+    bodyText,
+    theme.typography.bodyLarge,
+    {
+      maxLength: 600,
+      minFontSize: 16,
+      minScaleFactor: 0.85
+    }
+  );
 
   slide.addText(bodyText, {
     x: contentArea.x,
@@ -97,7 +109,7 @@ function createContentSlide(pptx, props, theme) {
     w: contentArea.w,
     h: contentArea.h,
     ...applyTypography(
-      theme.typography.bodyLarge,
+      adaptedTypography,
       theme.typography.fontFamily.body,
       theme.colors.text.dark,
       {
@@ -286,11 +298,26 @@ function createThankYouSlide(pptx, props, theme) {
 /**
  * Image Slide (Advanced Layouts)
  * Supports: full, sideBySide, grid, imageLeft arrangements
+ * Auto-detects layout based on image count if arrangement not specified
  */
 function createImageSlide(pptx, props, theme) {
   const slide = pptx.addSlide();
 
-  const arrangement = props.arrangement || 'full';
+  // Auto-detect arrangement based on image count if not specified
+  let arrangement = props.arrangement;
+  if (!arrangement) {
+    const imageCount = props.images ? props.images.length : (props.image ? 1 : 0);
+    if (imageCount === 1) {
+      arrangement = 'full';
+    } else if (imageCount === 2) {
+      arrangement = 'sideBySide';
+    } else if (imageCount >= 3) {
+      arrangement = 'grid';
+    } else {
+      arrangement = 'full'; // Default
+    }
+  }
+
   const layout = applyImageShowcaseLayout(slide, props.title, theme, arrangement);
 
   switch (arrangement) {

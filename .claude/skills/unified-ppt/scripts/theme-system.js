@@ -109,6 +109,14 @@ const EFFECT_PRESETS = {
       angle: 45,
       color: '000000',
       opacity: 0.4
+    },
+    dramatic: {
+      type: 'outer',
+      blur: 15,
+      offset: 5,
+      angle: 45,
+      color: '000000',
+      opacity: 0.5
     }
   },
   shapeShadow: {
@@ -135,6 +143,32 @@ const EFFECT_PRESETS = {
       angle: 90,
       color: '000000',
       opacity: 0.2
+    },
+    deep: {
+      type: 'outer',
+      blur: 30,
+      offset: 12,
+      angle: 90,
+      color: '000000',
+      opacity: 0.25
+    }
+  },
+  glow: {
+    soft: {
+      type: 'outer',
+      blur: 10,
+      offset: 0,
+      angle: 0,
+      color: 'FFFFFF',
+      opacity: 0.3
+    },
+    strong: {
+      type: 'outer',
+      blur: 20,
+      offset: 0,
+      angle: 0,
+      color: 'FFFFFF',
+      opacity: 0.5
     }
   }
 };
@@ -180,6 +214,21 @@ const TYPOGRAPHY_SCALE = {
     fontSize: 14,
     italic: true,
     lineSpacing: 16
+  },
+  code: {
+    fontSize: 16,
+    lineSpacing: 18
+    // Use theme.typography.fontFamily.mono for Courier New
+  },
+  highlight: {
+    fontSize: 18,
+    bold: true,
+    lineSpacing: 20
+  },
+  subtitle: {
+    fontSize: 22,
+    italic: true,
+    lineSpacing: 24
   }
 };
 

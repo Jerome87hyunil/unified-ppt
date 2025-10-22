@@ -213,42 +213,81 @@ function addSectionBadge(slide, number, theme) {
 
 /**
  * Create bullet point with custom style
+ * Enhanced with level-specific styling for improved visual hierarchy
  */
 function addStyledBullet(slide, text, x, y, level, theme, iconType = null) {
-  const indent = level * 0.4;
-  const iconSize = 0.15;
+  // Level-specific styling configuration
+  const levelConfig = {
+    0: {
+      indent: 0,
+      bulletSize: 0.12,
+      iconSize: 0.15,
+      fontSize: theme.typography.body.fontSize,
+      color: theme.colors.text.dark,
+      bulletColor: theme.colors.primary
+    },
+    1: {
+      indent: 0.5,
+      bulletSize: 0.09,
+      iconSize: 0.12,
+      fontSize: theme.typography.body.fontSize - 2,
+      color: theme.colors.text.dark,
+      bulletColor: theme.colors.secondary || theme.colors.primary
+    },
+    2: {
+      indent: 1.0,
+      bulletSize: 0.07,
+      iconSize: 0.1,
+      fontSize: theme.typography.body.fontSize - 4,
+      color: theme.colors.muted,
+      bulletColor: theme.colors.muted
+    }
+  };
+
+  const config = levelConfig[Math.min(level, 2)] || levelConfig[2];
   const gap = 0.1;
 
-  if (iconType && theme.assets.icons[iconType]) {
-    // Custom icon bullet
+  if (iconType && theme.assets.icons[iconType] && level === 0) {
+    // Custom icon bullet (only for top level)
     slide.addImage({
       data: theme.assets.icons[iconType],
-      x: x + indent,
+      x: x + config.indent,
       y: y + 0.05,
-      w: iconSize,
-      h: iconSize
+      w: config.iconSize,
+      h: config.iconSize
     });
   } else {
-    // Circle bullet
-    const bulletSize = level === 0 ? 0.1 : 0.08;
-    slide.addShape('ellipse', {
-      x: x + indent,
-      y: y + 0.1,
-      w: bulletSize,
-      h: bulletSize,
-      fill: { color: theme.colors.primary.replace('#', '') }
-    });
+    // Shape-based bullet (circle for level 0-1, dash for level 2)
+    if (level < 2) {
+      // Circle bullet
+      slide.addShape('ellipse', {
+        x: x + config.indent,
+        y: y + 0.1,
+        w: config.bulletSize,
+        h: config.bulletSize,
+        fill: { color: config.bulletColor.replace('#', '') }
+      });
+    } else {
+      // Dash bullet for level 2
+      slide.addShape('rect', {
+        x: x + config.indent,
+        y: y + 0.13,
+        w: 0.15,
+        h: 0.03,
+        fill: { color: config.bulletColor.replace('#', '') }
+      });
+    }
   }
 
-  // Text
+  // Text with level-specific styling
   slide.addText(text, {
-    x: x + indent + iconSize + gap,
+    x: x + config.indent + config.iconSize + gap,
     y,
-    w: 9 - x - indent - iconSize - gap,
+    w: 9 - x - config.indent - config.iconSize - gap,
     h: 0.3,
-    fontSize: theme.typography.body.fontSize - (level * 2),
+    fontSize: config.fontSize,
     fontFace: theme.typography.fontFamily.body,
-    color: theme.colors.text.dark.replace('#', '')
+    color: config.color.replace('#', '')
   });
 }
 
@@ -284,6 +323,43 @@ function applyTypography(typography, fontFamily, colorHex, additionalOptions = {
   };
 }
 
+/**
+ * Calculate adaptive typography based on content length
+ * Dynamically adjusts font size and line spacing to fit content
+ */
+function calculateAdaptiveTypography(text, baseTypography, constraints = {}) {
+  const {
+    maxLength = 500,
+    minFontSize = 14,
+    maxFontSize = null,
+    minScaleFactor = 0.8
+  } = constraints;
+
+  const textLength = typeof text === 'string' ? text.length : 0;
+
+  if (textLength > maxLength) {
+    // Calculate scale factor based on text length
+    const scaleFactor = Math.max(minScaleFactor, maxLength / textLength);
+
+    const adaptedFontSize = Math.max(
+      minFontSize,
+      Math.round(baseTypography.fontSize * scaleFactor)
+    );
+
+    const adaptedLineSpacing = baseTypography.lineSpacing
+      ? Math.round(baseTypography.lineSpacing * scaleFactor)
+      : undefined;
+
+    return {
+      ...baseTypography,
+      fontSize: maxFontSize ? Math.min(adaptedFontSize, maxFontSize) : adaptedFontSize,
+      ...(adaptedLineSpacing && { lineSpacing: adaptedLineSpacing })
+    };
+  }
+
+  return baseTypography;
+}
+
 module.exports = {
   addAccentBar,
   addDivider,
@@ -296,5 +372,6 @@ module.exports = {
   addSectionBadge,
   addStyledBullet,
   convertShadow,
-  applyTypography
+  applyTypography,
+  calculateAdaptiveTypography
 };
