@@ -4,7 +4,42 @@
 
 TypeScript로 작성된 재사용 가능한 PPT 컴포넌트 라이브러리와 Claude Skill을 사용하여 쉽고 빠르게 전문적인 프레젠테이션을 만들 수 있습니다.
 
-## ✨ 주요 기능
+## 🌟 NEW: 통합 워크플로우 (Integrated Workflow)
+
+**프로젝트 디자인 시스템을 자동으로 분석**하여 **브랜드 일관성 있는 프레젠테이션을 자동 생성**합니다!
+
+### 5단계 파이프라인
+
+```
+Design System Analyzer → Content Planner → HTML Generator
+→ PPTX Converter → Validator & Preview
+```
+
+**지원 기능**:
+- ✅ **자동 디자인 추출**: CSS 변수, 컬러, 폰트 자동 분석
+- ✅ **프레임워크 감지**: React, Next.js, Vue, Nuxt, Svelte
+- ✅ **스타일 변환**: shadcn/ui, Tailwind CSS 지원
+- ✅ **HTML → PPTX**: Playwright 기반 렌더링
+
+**빠른 테스트**:
+```bash
+npm run build
+
+# 디자인 시스템 분석
+node dist/examples/test-analyzer.js
+
+# HTML 생성
+node dist/examples/test-html-generator.js
+
+# 전체 워크플로우 (HTML → PPTX)
+node dist/examples/test-full-workflow.js
+```
+
+📖 **상세 가이드**: [통합 워크플로우 문서](./docs/integrated-workflow-guide.md)
+
+---
+
+## ✨ 기본 기능
 
 - **🎨 4가지 테마 프리셋**: Professional, Creative, Minimal, Corporate
 - **📦 재사용 가능한 컴포넌트**: 10가지 슬라이드 타입

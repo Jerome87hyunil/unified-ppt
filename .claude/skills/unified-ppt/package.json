@@ -1,0 +1,25 @@
+{
+  "name": "unified-ppt-skill",
+  "version": "2.0.0",
+  "description": "프로젝트 디자인 시스템을 자동으로 분석하여 브랜드 일관성 있는 PPT 생성 (PptxGenJS 네이티브)",
+  "main": "scripts/unified-ppt.js",
+  "scripts": {
+    "test": "node scripts/unified-ppt.js --help"
+  },
+  "keywords": [
+    "powerpoint",
+    "pptx",
+    "design-system",
+    "automation",
+    "claude-skill",
+    "pptxgenjs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
