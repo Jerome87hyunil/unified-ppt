@@ -1,0 +1,29 @@
+{
+  "name": "ppt-auto",
+  "version": "1.0.0",
+  "description": "디자인 컴포넌트 기반 PowerPoint 자동 생성 시스템",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "example": "npm run build && node dist/examples/simple-presentation.js"
+  },
+  "keywords": [
+    "powerpoint",
+    "pptx",
+    "presentation",
+    "automation",
+    "design-components"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  }
+}
