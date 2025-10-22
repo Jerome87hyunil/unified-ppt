@@ -8,8 +8,11 @@ const {
   addTitleWithUnderline,
   addFooter,
   addCornerDecoration,
-  addOverlay
+  addOverlay,
+  addGradientBackground
 } = require('./visual-helpers');
+
+const { convertGradientToPptxGenJS } = require('./theme-system');
 
 /**
  * Standard Content Layout
@@ -18,14 +21,12 @@ const {
  * Features:
  * - Left accent bar
  * - Title with underline
- * - Footer with page number
  * - Content area placeholder
+ * Note: Footer and page number handled by CONTENT_MASTER
  */
 function applyStandardLayout(slide, title, theme, options = {}) {
   const {
     showAccentBar = true,
-    showFooter = true,
-    footerText = theme.name || 'Presentation',
     contentY = 1.5,
     contentH = 5.0
   } = options;
@@ -38,10 +39,7 @@ function applyStandardLayout(slide, title, theme, options = {}) {
   // Title with underline
   addTitleWithUnderline(slide, title, 0.6, 0.5, 8.5, theme, 'h2');
 
-  // Footer
-  if (showFooter) {
-    addFooter(slide, footerText, theme, true);
-  }
+  // Footer and page number are automatically added by CONTENT_MASTER
 
   // Return content area dimensions for placing content
   return {
@@ -69,14 +67,21 @@ function applyFullBackgroundLayout(slide, theme, options = {}) {
     cornerDecoration = null, // 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'
     decorationSize = 1.5,
     backgroundImage = null,
-    overlayTransparency = 40
+    overlayTransparency = 40,
+    useGradient = false, // Enable gradient background
+    gradientType = 'hero' // 'hero', 'accent', 'subtle'
   } = options;
 
   // Background
   if (backgroundImage) {
     slide.background = { path: backgroundImage };
     addOverlay(slide, '000000', overlayTransparency);
+  } else if (useGradient && theme.gradients && theme.gradients[gradientType]) {
+    // Apply gradient background
+    const pptxGradient = convertGradientToPptxGenJS(theme.gradients[gradientType]);
+    addGradientBackground(slide, pptxGradient);
   } else {
+    // Solid color background
     slide.background = {
       fill: backgroundColor.replace('#', '')
     };

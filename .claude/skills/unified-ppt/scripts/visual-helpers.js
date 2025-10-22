@@ -60,14 +60,16 @@ function addTitleWithUnderline(slide, text, x, y, width, theme, typography = 'h1
 
 /**
  * Add gradient background to slide
+ * Requires PptxGenJS-compatible gradient format from convertGradientToPptxGenJS
  */
-function addGradientBackground(slide, gradientPreset) {
+function addGradientBackground(slide, pptxGradient) {
+  if (!pptxGradient || pptxGradient.type !== 'gradient') {
+    console.warn('⚠️ Invalid gradient format. Use convertGradientToPptxGenJS to convert.');
+    return;
+  }
+
   slide.background = {
-    fill: gradientPreset.stops.map(stop => ({
-      color: stop.color,
-      position: stop.position,
-      transparency: stop.transparency || 0
-    }))
+    fill: pptxGradient
   };
 }
 

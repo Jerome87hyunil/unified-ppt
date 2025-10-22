@@ -84,7 +84,7 @@ function createTitleSlide(pptx, props, theme) {
  * Content Slide (Using Master Layout)
  */
 function createContentSlide(pptx, props, theme) {
-  const slide = pptx.addSlide();
+  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Apply standard layout
   const { contentArea } = applyStandardLayout(slide, props.title, theme);
@@ -123,7 +123,7 @@ function createContentSlide(pptx, props, theme) {
  * Bullet Slide (Using Master Layout)
  */
 function createBulletSlide(pptx, props, theme) {
-  const slide = pptx.addSlide();
+  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Apply standard layout
   const { contentArea } = applyStandardLayout(slide, props.title, theme, {
@@ -162,7 +162,7 @@ function createBulletSlide(pptx, props, theme) {
  * Two Column Slide (Using Master Layout)
  */
 function createTwoColumnSlide(pptx, props, theme) {
-  const slide = pptx.addSlide();
+  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Apply two column layout
   const { leftColumn, rightColumn } = applyTwoColumnLayout(slide, props.title, theme);
@@ -301,7 +301,7 @@ function createThankYouSlide(pptx, props, theme) {
  * Auto-detects layout based on image count if arrangement not specified
  */
 function createImageSlide(pptx, props, theme) {
-  const slide = pptx.addSlide();
+  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Auto-detect arrangement based on image count if not specified
   let arrangement = props.arrangement;
@@ -442,7 +442,7 @@ function createImageSlide(pptx, props, theme) {
  * Chart Slide (Native PptxGenJS Charts)
  */
 function createChartSlide(pptx, props, theme) {
-  const slide = pptx.addSlide();
+  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   const layout = applyChartLayout(slide, props.title, theme, props.chartType || 'bar');
 
@@ -490,7 +490,7 @@ function createChartSlide(pptx, props, theme) {
  * Table Slide (Enhanced Tables)
  */
 function createTableSlide(pptx, props, theme) {
-  const slide = pptx.addSlide();
+  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   const layout = applyTableLayout(slide, props.title, theme);
 
@@ -582,7 +582,7 @@ function createQuoteSlide(pptx, props, theme) {
  * Side-by-side comparison (Before/After, VS, etc.)
  */
 function createComparisonSlide(pptx, props, theme) {
-  const slide = pptx.addSlide();
+  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Apply comparison layout
   const { leftSide, rightSide } = applyComparisonLayout(slide, props.title, theme, {
@@ -660,7 +660,7 @@ function createComparisonSlide(pptx, props, theme) {
  * Horizontal timeline with events/milestones
  */
 function createTimelineSlide(pptx, props, theme) {
-  const slide = pptx.addSlide();
+  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   const items = props.items || [];
   const { items: timelineItems } = applyTimelineLayout(slide, props.title, theme, items.length);
@@ -783,6 +783,48 @@ async function generatePPTX(slides, designSystem, outputPath, themeName = 'profe
     // 2. Create theme from design system
     const theme = createTheme(themeName, designSystem);
 
+    // 3. Define Master Slide for content slides
+    const footerText = designSystem.projectName || pptx.author || 'Presentation';
+    pptx.defineSlideMaster({
+      title: 'CONTENT_MASTER',
+      background: { fill: theme.colors.background.main.replace('#', '') },
+      objects: [
+        // Footer text (left)
+        {
+          text: {
+            text: footerText,
+            options: {
+              x: 0.5,
+              y: 7.2,
+              w: 4.0,
+              h: 0.3,
+              fontSize: theme.typography.caption.fontSize,
+              fontFace: theme.typography.fontFamily.body,
+              color: theme.colors.muted.replace('#', ''),
+              italic: theme.typography.caption.italic || false
+            }
+          }
+        },
+        // Page number placeholder (right)
+        {
+          placeholder: {
+            options: {
+              name: 'slideNumber',
+              type: 'body',
+              x: 9.0,
+              y: 7.2,
+              w: 0.5,
+              h: 0.3,
+              fontSize: theme.typography.caption.fontSize,
+              fontFace: theme.typography.fontFamily.body,
+              color: theme.colors.muted.replace('#', ''),
+              align: 'right'
+            }
+          }
+        }
+      ]
+    });
+
     console.log('\n🎨 적용된 테마:');
     console.log(`  이름: ${theme.name}`);
     console.log(`  Primary: ${theme.colors.primary}`);
@@ -791,7 +833,7 @@ async function generatePPTX(slides, designSystem, outputPath, themeName = 'profe
     console.log(`  Gradients: ${Object.keys(theme.gradients).length}개`);
     console.log(`  Icons: ${Object.keys(theme.assets.icons).length}개`);
 
-    // 3. Generate slides
+    // 4. Generate slides
     console.log('\n🔄 슬라이드 생성 중...');
     slides.forEach((slide, index) => {
       const slideNumber = String(index + 1).padStart(2, '0');

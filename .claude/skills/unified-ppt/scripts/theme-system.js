@@ -233,6 +233,24 @@ const TYPOGRAPHY_SCALE = {
 };
 
 /**
+ * Convert gradient definition to PptxGenJS format
+ * Transforms theme gradient format to native PptxGenJS gradient API
+ */
+function convertGradientToPptxGenJS(gradientDef) {
+  if (!gradientDef || !gradientDef.stops) return null;
+
+  return {
+    type: 'gradient',
+    angle: gradientDef.angle || 0,
+    colors: gradientDef.stops.map(stop => ({
+      color: stop.color,
+      position: stop.position,
+      transparency: stop.transparency || 0
+    }))
+  };
+}
+
+/**
  * Layout Patterns
  */
 const LAYOUT_PATTERNS = {
@@ -452,6 +470,7 @@ module.exports = {
   createProfessionalTheme,
   createMinimalTheme,
   createCorporateTheme,
+  convertGradientToPptxGenJS,
   ICON_LIBRARY,
   GRADIENT_PRESETS,
   EFFECT_PRESETS,
