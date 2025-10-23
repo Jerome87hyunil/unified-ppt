@@ -42,6 +42,115 @@ const { analyzeDesignSystem } = require('./analyzer');
 const { generatePPTX } = require('./pptx-generator-v2');
 
 /**
+ * 추출된 디자인 시스템으로 기본 스타일 생성
+ */
+function createDefaultStyles(designSystem) {
+  const colors = designSystem.colors || {};
+  const primary = colors.primary || colors.brand || '#2563EB';
+  const secondary = colors.secondary || colors.accent || '#64748B';
+  const background = colors.background || '#FFFFFF';
+  const text = colors.text || colors.foreground || '#1F2937';
+  const muted = colors.muted || '#6B7280';
+
+  return {
+    title: {
+      background: primary,
+      title: { color: '#FFFFFF', fontSize: 48 },
+      subtitle: { color: '#E5E7EB', fontSize: 24 },
+    },
+    section: {
+      background: primary,
+      title: { color: '#FFFFFF', fontSize: 44 },
+    },
+    content: {
+      background: '#F9FAFB',
+      accentBar: { color: primary },
+      title: { color: text, fontSize: 32 },
+      body: { color: text, fontSize: 18 },
+    },
+    bullet: {
+      background: '#FFFFFF',
+      accentBar: { color: primary },
+      title: { color: text, fontSize: 32 },
+      bullets: {
+        primaryColor: primary,
+        secondaryColor: secondary,
+        mutedColor: muted,
+        fontSize: 18,
+      },
+    },
+    twoColumn: {
+      background: '#F9FAFB',
+      title: { color: text, fontSize: 32 },
+      leftColumn: { backgroundColor: '#FFFFFF', textColor: text },
+      rightColumn: { backgroundColor: '#FFFFFF', textColor: text },
+    },
+    thankYou: {
+      background: '#F9FAFB',
+      message: { color: primary, fontSize: 44 },
+      contact: { color: muted, fontSize: 20 },
+    },
+    image: {
+      background: '#FFFFFF',
+      title: { color: text, fontSize: 32 },
+      caption: { color: muted, fontSize: 16 },
+    },
+    chart: {
+      background: '#FFFFFF',
+      title: { color: text, fontSize: 32 },
+      chartColors: [primary, secondary, muted],
+    },
+    table: {
+      background: '#FFFFFF',
+      title: { color: text, fontSize: 32 },
+      header: { backgroundColor: primary, textColor: '#FFFFFF' },
+      body: { backgroundColor: '#FFFFFF', textColor: text },
+    },
+    quote: {
+      background: '#F9FAFB',
+      quote: { color: text, fontSize: 32, italic: true },
+      author: { color: muted, fontSize: 20 },
+    },
+    comparison: {
+      background: '#FFFFFF',
+      title: { color: text, fontSize: 32 },
+      leftContent: { backgroundColor: '#FFFFFF', textColor: text },
+      rightContent: { backgroundColor: '#FFFFFF', textColor: text },
+    },
+    timeline: {
+      background: '#FFFFFF',
+      title: { color: text, fontSize: 32 },
+      node: { fillColor: primary, borderColor: primary },
+      itemTitle: { color: text, fontSize: 18 },
+      itemDescription: { color: muted, fontSize: 14 },
+    },
+  };
+}
+
+/**
+ * 슬라이드에 기본 스타일 적용 (style 속성이 없는 경우만)
+ */
+function applyDefaultStylesToSlides(slides, defaultStyles) {
+  return slides.map((slide) => {
+    // 이미 style이 있으면 그대로 유지
+    if (slide.style) {
+      return slide;
+    }
+
+    // 슬라이드 타입에 맞는 기본 스타일 적용
+    const typeStyle = defaultStyles[slide.type];
+    if (typeStyle) {
+      return {
+        ...slide,
+        style: typeStyle,
+      };
+    }
+
+    return slide;
+  });
+}
+
+/**
  * 메인 함수
  */
 async function main() {
@@ -112,6 +221,14 @@ Unified PPT Generator - 프로젝트 디자인 시스템을 반영한 PPT 자동
     console.log('-'.repeat(60));
     const designSystem = await analyzeDesignSystem(projectRoot);
 
+    // 1.5. 추출된 디자인 시스템으로 기본 스타일 생성
+    console.log('\n📍 PHASE 1.5: 기본 스타일 생성');
+    console.log('-'.repeat(60));
+    const defaultStyles = createDefaultStyles(designSystem);
+    console.log('✅ 12개 슬라이드 타입의 기본 스타일 생성 완료');
+    console.log(`   Primary: ${defaultStyles.title.background}`);
+    console.log(`   Text: ${defaultStyles.content.title.color}`);
+
     // 2. 슬라이드 정의 로드 또는 생성
     console.log('\n📍 PHASE 2: 슬라이드 정의');
     console.log('-'.repeat(60));
@@ -122,6 +239,10 @@ Unified PPT Generator - 프로젝트 디자인 시스템을 반영한 PPT 자동
       const content = fs.readFileSync(slidesPath, 'utf8');
       const definition = JSON.parse(content);
       slides = definition.slides || definition;
+
+      // 기존 JSON에 style이 없으면 자동 추가
+      console.log('기본 스타일 자동 적용 중...');
+      slides = applyDefaultStylesToSlides(slides, defaultStyles);
     } else {
       console.log('샘플 슬라이드 생성...');
       slides = [
@@ -182,9 +303,13 @@ Unified PPT Generator - 프로젝트 디자인 시스템을 반영한 PPT 자동
           },
         },
       ];
+
+      // 샘플 슬라이드에도 기본 스타일 적용
+      console.log('기본 스타일 자동 적용 중...');
+      slides = applyDefaultStylesToSlides(slides, defaultStyles);
     }
 
-    console.log(`✅ ${slides.length}개 슬라이드 준비 완료`);
+    console.log(`✅ ${slides.length}개 슬라이드 준비 완료 (커스텀 스타일 적용)`);
 
     // 3. PPTX 생성 (Theme System 2.0)
     console.log('\n📍 PHASE 3: PPTX 생성 (Theme System 2.0)');
