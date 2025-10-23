@@ -1,12 +1,34 @@
 ---
 name: unified-ppt
-description: This skill should be used when users want to generate PowerPoint presentations that reflect their project's design system (CSS variables, colors, fonts). The skill analyzes the project's design system and creates brand-consistent presentations using PptxGenJS native approach, ensuring fully editable and high-quality output.
+description: This skill should be used when users want to generate PowerPoint presentations that reflect their project's design system (CSS variables, colors, fonts). The skill analyzes the project's design system and creates brand-consistent presentations using PptxGenJS native approach, ensuring fully editable and high-quality output. IMPORTANT - When generating JSON slide definitions, ALWAYS include a 'style' property for each slide populated with the project's extracted colors to ensure portability across different tools and platforms.
 license: MIT
 ---
 
 # Unified PPT Generator
 
 Analyze a project's design system (CSS variables, colors, fonts) and automatically generate brand-consistent PowerPoint presentations using PptxGenJS native approach.
+
+## ⚠️ CRITICAL REQUIREMENT
+
+**When generating JSON slide definitions, you MUST include a `style` property for each slide.**
+
+This ensures:
+- ✅ Portability across different PPT tools
+- ✅ Self-contained JSON files with complete styling
+- ✅ Version control of design decisions
+- ✅ Independence from external CSS files
+
+**Example**:
+```json
+{
+  "type": "title",
+  "props": { "title": "Project Title" },
+  "style": {
+    "background": "#5ec9a7",
+    "title": { "color": "#FFFFFF", "fontSize": 48 }
+  }
+}
+```
 
 ## When to Use This Skill
 
@@ -151,6 +173,8 @@ On first run, the skill automatically installs required dependencies (`pptxgenjs
 
 ## Slide Definition Format
 
+**IMPORTANT**: ALL slides MUST include a `style` property populated with the project's extracted colors. This ensures portability across different tools and platforms.
+
 Define slides in JSON format:
 
 ```json
@@ -162,6 +186,17 @@ Define slides in JSON format:
         "title": "Presentation Title",
         "subtitle": "Optional subtitle",
         "backgroundImage": "path/to/image.jpg"
+      },
+      "style": {
+        "background": "#5ec9a7",
+        "title": {
+          "color": "#FFFFFF",
+          "fontSize": 48
+        },
+        "subtitle": {
+          "color": "#E5E7EB",
+          "fontSize": 24
+        }
       }
     },
     {
@@ -173,6 +208,22 @@ Define slides in JSON format:
           { "text": "Sub-point", "level": 1 },
           { "text": "Sub-sub-point", "level": 2 }
         ]
+      },
+      "style": {
+        "background": "#FFFFFF",
+        "accentBar": {
+          "color": "#5ec9a7"
+        },
+        "title": {
+          "color": "#0f1419",
+          "fontSize": 32
+        },
+        "bullets": {
+          "primaryColor": "#5ec9a7",
+          "secondaryColor": "#1c3f57",
+          "mutedColor": "#e5e5e6",
+          "fontSize": 18
+        }
       }
     },
     {
@@ -180,6 +231,20 @@ Define slides in JSON format:
       "props": {
         "title": "Content Slide",
         "body": ["First line", "Second line", "Third line"]
+      },
+      "style": {
+        "background": "#F9FAFB",
+        "accentBar": {
+          "color": "#5ec9a7"
+        },
+        "title": {
+          "color": "#0f1419",
+          "fontSize": 32
+        },
+        "body": {
+          "color": "#0f1419",
+          "fontSize": 18
+        }
       }
     },
     {
@@ -188,12 +253,34 @@ Define slides in JSON format:
         "title": "Two Column Layout",
         "leftContent": "Left side content\nMultiple lines supported",
         "rightContent": "Right side content\nMultiple lines supported"
+      },
+      "style": {
+        "background": "#F9FAFB",
+        "title": {
+          "color": "#0f1419",
+          "fontSize": 32
+        },
+        "leftColumn": {
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#0f1419"
+        },
+        "rightColumn": {
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#0f1419"
+        }
       }
     },
     {
       "type": "section",
       "props": {
         "title": "Section Divider"
+      },
+      "style": {
+        "background": "#5ec9a7",
+        "title": {
+          "color": "#FFFFFF",
+          "fontSize": 44
+        }
       }
     },
     {
@@ -201,6 +288,17 @@ Define slides in JSON format:
       "props": {
         "message": "Thank You",
         "contact": "contact@example.com"
+      },
+      "style": {
+        "background": "#F9FAFB",
+        "message": {
+          "color": "#5ec9a7",
+          "fontSize": 44
+        },
+        "contact": {
+          "color": "#e5e5e6",
+          "fontSize": 20
+        }
       }
     }
   ]
@@ -215,34 +313,40 @@ Define slides in JSON format:
 - Centered title with optional subtitle
 - Optional background image support
 - Corner decoration
-- Props: `title`, `subtitle`, `backgroundImage`
+- **Props**: `title`, `subtitle`, `backgroundImage`
+- **Style**: `background`, `title.{color,fontSize,fontFamily,align}`, `subtitle.{color,fontSize,align}`
 
 #### 2. Section Slide (`type: 'section'`)
 - Section divider with primary color background
 - Optional section number badge
 - Large centered title
-- Props: `title`, `number`
+- **Props**: `title`, `number`
+- **Style**: `background`, `title.{color,fontSize}`, `badge.{backgroundColor,textColor}`
 
 #### 3. Content Slide (`type: 'content'`)
 - Standard layout with accent bar
 - Title with underline
 - Body text (string or array)
-- Props: `title`, `body`
+- **Props**: `title`, `body`
+- **Style**: `background`, `accentBar.color`, `title.{color,fontSize}`, `body.{color,fontSize,fontFamily,align}`
 
 #### 4. Bullet Slide (`type: 'bullet'`)
 - Hierarchical bullet points (3 levels)
 - Styled bullets with icons (arrows for level 0)
-- Props: `title`, `bullets: [{text, level}]`
+- **Props**: `title`, `bullets: [{text, level}]`
+- **Style**: `background`, `accentBar.color`, `title.{color,fontSize}`, `bullets.{primaryColor,secondaryColor,mutedColor,fontSize,fontFamily,lineHeight,iconType}`
 
 #### 5. Two Column Slide (`type: 'twoColumn'`)
 - Split layout with center divider
 - Independent text content per column
-- Props: `title`, `leftContent`, `rightContent`
+- **Props**: `title`, `leftContent`, `rightContent`
+- **Style**: `background`, `title.{color,fontSize}`, `leftColumn.{backgroundColor,textColor}`, `rightColumn.{backgroundColor,textColor}`
 
 #### 6. Thank You Slide (`type: 'thankYou'`)
 - Light background with corner decorations
 - Centered message with decorative underline
-- Props: `message`, `contact`
+- **Props**: `message`, `contact`
+- **Style**: `background`, `message.{color,fontSize}`, `contact.{color,fontSize}`
 
 ### Advanced Slides
 
@@ -252,37 +356,43 @@ Define slides in JSON format:
 - **sideBySide**: 2 images side-by-side + caption
 - **grid**: 2x2 grid (up to 4 images)
 - **imageLeft**: Image on left, text on right
-- Props: `title`, `arrangement`, `image`, `images`, `caption`, `text`
+- **Props**: `title`, `arrangement`, `image`, `images`, `caption`, `text`
+- **Style**: `background`, `title.{color,fontSize}`, `caption.{color,fontSize,fontFamily,align,italic}`
 
 #### 8. Chart Slide (`type: 'chart'`)
 - Native PptxGenJS charts (4 types)
 - Types: `bar`, `line`, `pie`, `area`
 - Theme-based colors
-- Props: `title`, `chartType`, `data: [{name, labels, values}]`
+- **Props**: `title`, `chartType`, `data: [{name, labels, values}]`
+- **Style**: `background`, `title.{color,fontSize}`, `chartColors`, `gridColor`, `gridStyle`, `showLegend`, `showAxisLines`
 
 #### 9. Table Slide (`type: 'table'`)
 - Structured data display
 - Theme-based styling
 - Custom column widths
-- Props: `title`, `headers`, `rows`, `columnWidths`
+- **Props**: `title`, `headers`, `rows`, `columnWidths`
+- **Style**: `background`, `title.{color,fontSize}`, `header.{backgroundColor,textColor,fontSize,bold}`, `body.{backgroundColor,textColor,fontSize}`, `border.{color,width}`, `rowHeight`
 
 #### 10. Quote Slide (`type: 'quote'`)
 - Large centered quote text (italic, Georgia font)
 - Decorative quote mark
 - Author attribution (right-aligned)
-- Props: `quote`, `author`, `showQuoteMark`
+- **Props**: `quote`, `author`, `showQuoteMark`
+- **Style**: `background`, `quote.{color,fontSize,fontFamily,italic,align}`, `author.{color,fontSize,align}`
 
 #### 11. Comparison Slide (`type: 'comparison'`)
 - Side-by-side comparison with center divider
 - Custom labels (default: Before/After)
 - Supports text or images on both sides
-- Props: `title`, `leftLabel`, `rightLabel`, `leftContent`, `rightContent`, `leftImage`, `rightImage`
+- **Props**: `title`, `leftLabel`, `rightLabel`, `leftContent`, `rightContent`, `leftImage`, `rightImage`
+- **Style**: `background`, `title.{color,fontSize}`, `leftContent.{backgroundColor,textColor,fontSize}`, `rightContent.{backgroundColor,textColor,fontSize}`, `dividerColor`
 
 #### 12. Timeline Slide (`type: 'timeline'`)
 - Horizontal timeline with nodes
 - Event titles and descriptions
 - Dynamic layout based on item count
-- Props: `title`, `items: [{title, description}]`
+- **Props**: `title`, `items: [{title, description}]`
+- **Style**: `background`, `title.{color,fontSize}`, `node.{fillColor,borderColor,borderWidth}`, `itemTitle.{color,fontSize}`, `itemDescription.{color,fontSize}`
 
 ## Bundled Resources
 
@@ -311,12 +421,119 @@ Main entry point that:
 - Handles command-line arguments
 - Provides progress feedback
 
+## Custom Styles and Color System
+
+### Style Priority System
+
+1. **JSON `style` property** (Highest) - Per-slide custom styles
+2. **Extracted CSS variables** (Medium) - Project brand colors
+3. **Theme defaults** (Lowest) - professional/minimal/corporate fallback
+
+### Automatic Style Generation
+
+**When generating JSON slides, ALWAYS populate the `style` property with extracted project colors:**
+
+```javascript
+// Extract project colors from CSS
+const colors = {
+  primary: "#5ec9a7",     // from --primary
+  secondary: "#1c3f57",   // from --secondary
+  text: "#0f1419",        // from --foreground
+  muted: "#e5e5e6"        // from --muted
+};
+
+// Apply to each slide
+{
+  "type": "title",
+  "props": { "title": "Title" },
+  "style": {
+    "background": colors.primary,  // Use extracted primary
+    "title": { "color": "#FFFFFF", "fontSize": 48 }
+  }
+}
+```
+
+### Color Mapping Rules
+
+Map extracted CSS variables to slide styles:
+
+| CSS Variable | Slide Usage |
+|--------------|-------------|
+| `--primary`, `--brand` | title/section backgrounds, accent bars, primary bullets |
+| `--secondary`, `--accent` | secondary elements, two-column backgrounds |
+| `--text`, `--foreground` | body text, titles on light backgrounds |
+| `--muted` | contact info, captions, tertiary text |
+| `--background` | slide backgrounds (content/bullet slides) |
+
+### Style Object Structure by Slide Type
+
+#### Title Slide
+```json
+"style": {
+  "background": "#5ec9a7",
+  "title": { "color": "#FFFFFF", "fontSize": 48, "fontFamily": "Arial", "align": "center" },
+  "subtitle": { "color": "#E5E7EB", "fontSize": 24, "align": "center" }
+}
+```
+
+#### Bullet Slide
+```json
+"style": {
+  "background": "#FFFFFF",
+  "accentBar": { "color": "#5ec9a7" },
+  "title": { "color": "#0f1419", "fontSize": 32 },
+  "bullets": {
+    "primaryColor": "#5ec9a7",
+    "secondaryColor": "#1c3f57",
+    "mutedColor": "#e5e5e6",
+    "fontSize": 18,
+    "fontFamily": "Arial",
+    "lineHeight": 1.5,
+    "iconType": "arrow"
+  }
+}
+```
+
+#### Comparison Slide
+```json
+"style": {
+  "background": "#FFFFFF",
+  "title": { "color": "#0f1419", "fontSize": 32 },
+  "leftContent": { "backgroundColor": "#F9FAFB", "textColor": "#0f1419", "fontSize": 18 },
+  "rightContent": { "backgroundColor": "#F9FAFB", "textColor": "#0f1419", "fontSize": 18 },
+  "dividerColor": "#5ec9a7"
+}
+```
+
+#### Timeline Slide
+```json
+"style": {
+  "background": "#FFFFFF",
+  "title": { "color": "#0f1419", "fontSize": 32 },
+  "node": { "fillColor": "#5ec9a7", "borderColor": "#5ec9a7", "borderWidth": 2 },
+  "itemTitle": { "color": "#0f1419", "fontSize": 18, "bold": true },
+  "itemDescription": { "color": "#6B7280", "fontSize": 14 }
+}
+```
+
+### Why Style Properties Are Required
+
+**Portability**: JSON files with embedded styles can be:
+- Used by different PPT generation tools
+- Imported into other platforms
+- Shared without losing design intent
+- Version controlled with complete style information
+
+**Self-Documentation**: Each JSON file is self-contained with all styling information, making it easier to understand design choices without examining external CSS files.
+
+**Consistency**: Ensures generated slides always reflect the exact brand colors, even if CSS variables change later.
+
 ## Limitations
 
-- **Slide Types**: Currently 6 types (chart, table, image planned for future)
 - **CSS Source**: Only `:root` CSS variables supported
 - **CSS Variable References**: `var()` functions not supported (direct values only)
-- **Layout Complexity**: Simple layouts only (complex layouts require manual editing)
+- **Layout Complexity**: Simple layouts only (complex layouts require manual editing in PowerPoint)
+- **Gradients**: Not supported due to PptxGenJS limitations (solid colors only)
 
 ## Troubleshooting
 
