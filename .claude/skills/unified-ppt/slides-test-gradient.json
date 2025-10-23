@@ -1,0 +1,16 @@
+{
+  "slides": [
+    {
+      "type": "title",
+      "props": {
+        "title": "Gradient Test",
+        "subtitle": "Testing gradient background"
+      },
+      "style": {
+        "background": {
+          "gradient": "hero"
+        }
+      }
+    }
+  ]
+}

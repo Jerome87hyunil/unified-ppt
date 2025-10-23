@@ -10,7 +10,9 @@ const {
   addSectionBadge,
   addStyledBullet,
   applyTypography,
-  calculateAdaptiveTypography
+  calculateAdaptiveTypography,
+  mergeSlideStyles,
+  applyBackground
 } = require('./visual-helpers');
 const {
   applyStandardLayout,
@@ -26,32 +28,48 @@ const {
 } = require('./master-layouts');
 
 /**
- * Title Slide (Using Master Layout)
+ * Title Slide (Supports Custom Styles)
  */
-function createTitleSlide(pptx, props, theme) {
+function createTitleSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide();
 
-  // Apply full background layout
-  const { contentArea } = applyFullBackgroundLayout(slide, theme, {
-    backgroundColor: theme.colors.primary,
-    cornerDecoration: 'topRight',
-    decorationSize: 1.5,
-    backgroundImage: props.backgroundImage,
-    overlayTransparency: 40
-  });
+  // Apply background (custom or default)
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  } else if (props.backgroundImage) {
+    const { addOverlay } = require('./visual-helpers');
+    slide.background = { path: props.backgroundImage };
+    addOverlay(slide, '000000', 40);
+  } else {
+    slide.background = { fill: theme.colors.primary.replace('#', '') };
+  }
 
-  // Main title (Hero typography with shadow)
+  // Content area (centered)
+  const contentArea = {
+    x: 0.5,
+    y: 2.5,
+    w: 9.0,
+    h: 2.5
+  };
+
+  // Merge title style
+  const titleStyle = mergeSlideStyles(theme.typography.hero, customStyle.title || {});
+  const titleFontFamily = customStyle.title?.fontFamily || theme.typography.fontFamily.heading;
+  const titleColor = customStyle.title?.color || theme.colors.text.light;
+  const titleAlign = customStyle.title?.align || 'center';
+
+  // Main title
   slide.addText(props.title, {
     x: contentArea.x,
     y: contentArea.y,
     w: contentArea.w,
     h: 1.5,
     ...applyTypography(
-      theme.typography.hero,
-      theme.typography.fontFamily.heading,
-      theme.colors.text.light,
+      titleStyle,
+      titleFontFamily,
+      titleColor,
       {
-        align: 'center',
+        align: titleAlign,
         valign: 'middle',
         ...(theme.effects.textShadowStrong && {
           shadow: theme.effects.textShadowStrong
@@ -62,17 +80,22 @@ function createTitleSlide(pptx, props, theme) {
 
   // Subtitle
   if (props.subtitle) {
+    const subtitleStyle = mergeSlideStyles(theme.typography.h3, customStyle.subtitle || {});
+    const subtitleFontFamily = customStyle.subtitle?.fontFamily || theme.typography.fontFamily.body;
+    const subtitleColor = customStyle.subtitle?.color || theme.colors.text.light;
+    const subtitleAlign = customStyle.subtitle?.align || 'center';
+
     slide.addText(props.subtitle, {
       x: contentArea.x,
       y: contentArea.y + 1.7,
       w: contentArea.w,
       h: 0.8,
       ...applyTypography(
-        theme.typography.h3,
-        theme.typography.fontFamily.body,
-        theme.colors.text.light,
+        subtitleStyle,
+        subtitleFontFamily,
+        subtitleColor,
         {
-          align: 'center',
+          align: subtitleAlign,
           valign: 'middle'
         }
       )
@@ -83,7 +106,7 @@ function createTitleSlide(pptx, props, theme) {
 /**
  * Content Slide (Using Master Layout)
  */
-function createContentSlide(pptx, props, theme) {
+function createContentSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Apply standard layout
@@ -122,7 +145,7 @@ function createContentSlide(pptx, props, theme) {
 /**
  * Bullet Slide (Using Master Layout)
  */
-function createBulletSlide(pptx, props, theme) {
+function createBulletSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Apply standard layout
@@ -161,7 +184,7 @@ function createBulletSlide(pptx, props, theme) {
 /**
  * Two Column Slide (Using Master Layout)
  */
-function createTwoColumnSlide(pptx, props, theme) {
+function createTwoColumnSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Apply two column layout
@@ -203,7 +226,7 @@ function createTwoColumnSlide(pptx, props, theme) {
 /**
  * Section Slide (Using Master Layout)
  */
-function createSectionSlide(pptx, props, theme) {
+function createSectionSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide();
 
   // Apply full background layout
@@ -243,7 +266,7 @@ function createSectionSlide(pptx, props, theme) {
 /**
  * Thank You Slide (Using Master Layout)
  */
-function createThankYouSlide(pptx, props, theme) {
+function createThankYouSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide();
 
   // Apply light background layout
@@ -300,7 +323,7 @@ function createThankYouSlide(pptx, props, theme) {
  * Supports: full, sideBySide, grid, imageLeft arrangements
  * Auto-detects layout based on image count if arrangement not specified
  */
-function createImageSlide(pptx, props, theme) {
+function createImageSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Auto-detect arrangement based on image count if not specified
@@ -441,7 +464,7 @@ function createImageSlide(pptx, props, theme) {
 /**
  * Chart Slide (Native PptxGenJS Charts)
  */
-function createChartSlide(pptx, props, theme) {
+function createChartSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   const layout = applyChartLayout(slide, props.title, theme, props.chartType || 'bar');
@@ -489,7 +512,7 @@ function createChartSlide(pptx, props, theme) {
 /**
  * Table Slide (Enhanced Tables)
  */
-function createTableSlide(pptx, props, theme) {
+function createTableSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   const layout = applyTableLayout(slide, props.title, theme);
@@ -538,7 +561,7 @@ function createTableSlide(pptx, props, theme) {
  * Quote Slide
  * Large centered quote with author attribution
  */
-function createQuoteSlide(pptx, props, theme) {
+function createQuoteSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide();
 
   // Apply quote layout
@@ -581,7 +604,7 @@ function createQuoteSlide(pptx, props, theme) {
  * Comparison Slide
  * Side-by-side comparison (Before/After, VS, etc.)
  */
-function createComparisonSlide(pptx, props, theme) {
+function createComparisonSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   // Apply comparison layout
@@ -659,7 +682,7 @@ function createComparisonSlide(pptx, props, theme) {
  * Timeline Slide
  * Horizontal timeline with events/milestones
  */
-function createTimelineSlide(pptx, props, theme) {
+function createTimelineSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
   const items = props.items || [];
@@ -721,42 +744,44 @@ function createTimelineSlide(pptx, props, theme) {
  * Create slide based on type
  */
 function createSlide(pptx, slideData, theme) {
+  const { style } = slideData; // Extract custom style from slide definition
+
   switch (slideData.type) {
     case 'title':
-      createTitleSlide(pptx, slideData.props, theme);
+      createTitleSlide(pptx, slideData.props, theme, style);
       break;
     case 'content':
-      createContentSlide(pptx, slideData.props, theme);
+      createContentSlide(pptx, slideData.props, theme, style);
       break;
     case 'bullet':
-      createBulletSlide(pptx, slideData.props, theme);
+      createBulletSlide(pptx, slideData.props, theme, style);
       break;
     case 'twoColumn':
-      createTwoColumnSlide(pptx, slideData.props, theme);
+      createTwoColumnSlide(pptx, slideData.props, theme, style);
       break;
     case 'section':
-      createSectionSlide(pptx, slideData.props, theme);
+      createSectionSlide(pptx, slideData.props, theme, style);
       break;
     case 'image':
-      createImageSlide(pptx, slideData.props, theme);
+      createImageSlide(pptx, slideData.props, theme, style);
       break;
     case 'chart':
-      createChartSlide(pptx, slideData.props, theme);
+      createChartSlide(pptx, slideData.props, theme, style);
       break;
     case 'table':
-      createTableSlide(pptx, slideData.props, theme);
+      createTableSlide(pptx, slideData.props, theme, style);
       break;
     case 'quote':
-      createQuoteSlide(pptx, slideData.props, theme);
+      createQuoteSlide(pptx, slideData.props, theme, style);
       break;
     case 'comparison':
-      createComparisonSlide(pptx, slideData.props, theme);
+      createComparisonSlide(pptx, slideData.props, theme, style);
       break;
     case 'timeline':
-      createTimelineSlide(pptx, slideData.props, theme);
+      createTimelineSlide(pptx, slideData.props, theme, style);
       break;
     case 'thankYou':
-      createThankYouSlide(pptx, slideData.props, theme);
+      createThankYouSlide(pptx, slideData.props, theme, style);
       break;
     default:
       console.warn(`⚠️ 지원하지 않는 슬라이드 타입: ${slideData.type}`);

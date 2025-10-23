@@ -313,12 +313,15 @@ function convertShadow(shadowDef) {
  * Apply typography style to text options
  */
 function applyTypography(typography, fontFamily, colorHex, additionalOptions = {}) {
+  // Ensure colorHex is a string (handle objects or other types gracefully)
+  const colorString = typeof colorHex === 'string' ? colorHex : String(colorHex || '');
+
   return {
     fontSize: typography.fontSize,
     bold: typography.bold || false,
     italic: typography.italic || false,
     fontFace: fontFamily,
-    color: colorHex.replace('#', ''),
+    color: colorString.replace('#', ''),
     ...(typography.charSpacing && { charSpacing: typography.charSpacing }),
     ...(typography.lineSpacing && { lineSpacing: typography.lineSpacing }),
     ...additionalOptions
@@ -362,6 +365,117 @@ function calculateAdaptiveTypography(text, baseTypography, constraints = {}) {
   return baseTypography;
 }
 
+/**
+ * Merge custom slide styles with theme defaults
+ * Custom styles take precedence over theme styles
+ * Performs deep merge for nested objects
+ *
+ * @param {Object} themeStyle - Default styles from theme
+ * @param {Object} customStyle - Custom styles from slides.json
+ * @returns {Object} Merged style object
+ *
+ * @example
+ * const theme = { title: { fontSize: 48, color: "#FFF" } };
+ * const custom = { title: { fontSize: 60 } };
+ * mergeSlideStyles(theme, custom);
+ * // Returns: { title: { fontSize: 60, color: "#FFF" } }
+ */
+function mergeSlideStyles(themeStyle, customStyle) {
+  // No custom style - return theme defaults
+  if (!customStyle || Object.keys(customStyle).length === 0) {
+    return themeStyle;
+  }
+
+  // Start with theme defaults
+  const merged = { ...themeStyle };
+
+  // Override with custom styles
+  for (const key in customStyle) {
+    if (customStyle[key] && typeof customStyle[key] === 'object' && !Array.isArray(customStyle[key])) {
+      // Nested object - deep merge to preserve unspecified properties
+      merged[key] = {
+        ...(merged[key] || {}),
+        ...customStyle[key]
+      };
+    } else {
+      // Primitive value or array - direct override
+      merged[key] = customStyle[key];
+    }
+  }
+
+  return merged;
+}
+
+/**
+ * Apply background to slide from custom style configuration
+ * Supports: HEX color, gradient (by name or custom), and image backgrounds
+ *
+ * @param {Object} slide - PptxGenJS slide instance
+ * @param {string|Object} backgroundConfig - Background configuration
+ *   - string: HEX color (e.g., "#2563EB")
+ *   - { gradient: "hero" }: Theme gradient by name
+ *   - { gradient: { angle, stops } }: Custom gradient definition
+ *   - { image: "path", overlay: { color, transparency } }: Image with overlay
+ * @param {Object} theme - Theme object with colors and gradients
+ *
+ * @example
+ * applyBackground(slide, "#2563EB", theme); // Solid color
+ * applyBackground(slide, { gradient: "hero" }, theme); // Theme gradient
+ * applyBackground(slide, { image: "bg.jpg", overlay: { transparency: 50 } }, theme);
+ */
+function applyBackground(slide, backgroundConfig, theme) {
+  // Import convertGradientToPptxGenJS on demand to avoid circular dependency
+  const { convertGradientToPptxGenJS } = require('./theme-system');
+
+  if (!backgroundConfig) {
+    // No background specified - use theme default
+    slide.background = { fill: theme.colors.primary.replace('#', '') };
+    return;
+  }
+
+  // Case 1: Simple HEX color string
+  if (typeof backgroundConfig === 'string') {
+    slide.background = { fill: backgroundConfig.replace('#', '') };
+    return;
+  }
+
+  // Case 2: Gradient by name (from theme)
+  if (backgroundConfig.gradient && typeof backgroundConfig.gradient === 'string') {
+    const gradientDef = theme.gradients[backgroundConfig.gradient];
+    if (gradientDef) {
+      const pptxGradient = convertGradientToPptxGenJS(gradientDef);
+      addGradientBackground(slide, pptxGradient);
+    } else {
+      console.warn(`⚠️ Gradient "${backgroundConfig.gradient}" not found in theme. Using primary color.`);
+      slide.background = { fill: theme.colors.primary.replace('#', '') };
+    }
+    return;
+  }
+
+  // Case 3: Custom gradient definition
+  if (backgroundConfig.gradient && typeof backgroundConfig.gradient === 'object') {
+    const pptxGradient = convertGradientToPptxGenJS(backgroundConfig.gradient);
+    addGradientBackground(slide, pptxGradient);
+    return;
+  }
+
+  // Case 4: Image with optional overlay
+  if (backgroundConfig.image) {
+    slide.background = { path: backgroundConfig.image };
+    if (backgroundConfig.overlay) {
+      addOverlay(
+        slide,
+        backgroundConfig.overlay.color || '000000',
+        backgroundConfig.overlay.transparency || 40
+      );
+    }
+    return;
+  }
+
+  // Fallback: use theme primary color
+  slide.background = { fill: theme.colors.primary.replace('#', '') };
+}
+
 module.exports = {
   addAccentBar,
   addDivider,
@@ -375,5 +489,7 @@ module.exports = {
   addStyledBullet,
   convertShadow,
   applyTypography,
-  calculateAdaptiveTypography
+  calculateAdaptiveTypography,
+  mergeSlideStyles,
+  applyBackground
 };

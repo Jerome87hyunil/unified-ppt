@@ -1,0 +1,117 @@
+{
+  "slides": [
+    {
+      "type": "title",
+      "props": {
+        "title": "Custom Styled Presentation",
+        "subtitle": "플랫폼 독립적 스타일 시스템 데모"
+      },
+      "style": {
+        "background": {
+          "gradient": "hero"
+        },
+        "title": {
+          "fontSize": 56,
+          "fontFamily": "Arial",
+          "color": "#FFFFFF",
+          "bold": true,
+          "align": "center"
+        },
+        "subtitle": {
+          "fontSize": 28,
+          "fontFamily": "Arial",
+          "color": "#E0E0E0",
+          "italic": true,
+          "align": "center"
+        }
+      }
+    },
+    {
+      "type": "title",
+      "props": {
+        "title": "Solid Color Background",
+        "subtitle": "단색 배경 예제"
+      },
+      "style": {
+        "background": "#1E3A8A",
+        "title": {
+          "fontSize": 48,
+          "color": "#FFFFFF"
+        },
+        "subtitle": {
+          "fontSize": 24,
+          "color": "#93C5FD"
+        }
+      }
+    },
+    {
+      "type": "bullet",
+      "props": {
+        "title": "Custom Typography",
+        "bullets": [
+          { "text": "플랫폼 독립적 스타일 정의", "level": 0 },
+          { "text": "fontSize, fontFamily, color 지정", "level": 1 },
+          { "text": "JSON만으로 완전한 재현 가능", "level": 1 },
+          { "text": "하위 호환성 보장", "level": 0 },
+          { "text": "style 없으면 테마 기본값 사용", "level": 1 }
+        ]
+      },
+      "style": {
+        "title": {
+          "fontSize": 32,
+          "color": "#1F2937",
+          "bold": true
+        }
+      }
+    },
+    {
+      "type": "content",
+      "props": {
+        "title": "Style Attributes",
+        "body": [
+          "이 프레젠테이션은 slides.json에 정의된 상세한 스타일 속성을 사용합니다.",
+          "",
+          "지원하는 스타일 속성:",
+          "• background: HEX 색상, gradient (hero/accent/subtle), 또는 custom gradient",
+          "• title/subtitle: fontSize, fontFamily, color, bold, italic, align",
+          "• 모든 속성은 선택적이며, 미지정 시 테마 기본값 사용"
+        ]
+      }
+    },
+    {
+      "type": "title",
+      "props": {
+        "title": "Custom Gradient",
+        "subtitle": "사용자 정의 그라데이션 배경"
+      },
+      "style": {
+        "background": {
+          "gradient": {
+            "angle": 135,
+            "stops": [
+              { "color": "8B5CF6", "position": 0, "transparency": 0 },
+              { "color": "EC4899", "position": 50, "transparency": 0 },
+              { "color": "EF4444", "position": 100, "transparency": 0 }
+            ]
+          }
+        },
+        "title": {
+          "fontSize": 52,
+          "color": "#FFFFFF",
+          "bold": true
+        },
+        "subtitle": {
+          "fontSize": 26,
+          "color": "#F3E8FF"
+        }
+      }
+    },
+    {
+      "type": "thankYou",
+      "props": {
+        "message": "감사합니다!",
+        "contact": "Style System v1.0"
+      }
+    }
+  ]
+}
