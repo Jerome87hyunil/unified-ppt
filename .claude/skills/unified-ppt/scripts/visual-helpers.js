@@ -440,22 +440,19 @@ function applyBackground(slide, backgroundConfig, theme) {
   }
 
   // Case 2: Gradient by name (from theme)
+  // TODO: PptxGenJS gradient support needs more investigation
+  // Currently falling back to solid color
   if (backgroundConfig.gradient && typeof backgroundConfig.gradient === 'string') {
-    const gradientDef = theme.gradients[backgroundConfig.gradient];
-    if (gradientDef) {
-      const pptxGradient = convertGradientToPptxGenJS(gradientDef);
-      addGradientBackground(slide, pptxGradient);
-    } else {
-      console.warn(`⚠️ Gradient "${backgroundConfig.gradient}" not found in theme. Using primary color.`);
-      slide.background = { fill: theme.colors.primary.replace('#', '') };
-    }
+    console.warn(`⚠️ Gradient backgrounds not yet fully supported. Using primary color. (Requested: ${backgroundConfig.gradient})`);
+    slide.background = { fill: theme.colors.primary.replace('#', '') };
     return;
   }
 
   // Case 3: Custom gradient definition
+  // TODO: PptxGenJS gradient support needs more investigation
   if (backgroundConfig.gradient && typeof backgroundConfig.gradient === 'object') {
-    const pptxGradient = convertGradientToPptxGenJS(backgroundConfig.gradient);
-    addGradientBackground(slide, pptxGradient);
+    console.warn(`⚠️ Custom gradient backgrounds not yet fully supported. Using primary color.`);
+    slide.background = { fill: theme.colors.primary.replace('#', '') };
     return;
   }
 
