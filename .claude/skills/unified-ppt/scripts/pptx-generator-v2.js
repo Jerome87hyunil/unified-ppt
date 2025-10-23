@@ -108,7 +108,7 @@ function createTitleSlide(pptx, props, theme, customStyle = {}) {
  * Content Slide (Using Master Layout)
  */
 function createContentSlide(pptx, props, theme, customStyle = {}) {
-  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
+  const slide = pptx.addSlide();
 
   // Apply custom background if specified
   if (customStyle.background) {
@@ -202,7 +202,7 @@ function createContentSlide(pptx, props, theme, customStyle = {}) {
  * Bullet Slide (Using Master Layout)
  */
 function createBulletSlide(pptx, props, theme, customStyle = {}) {
-  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
+  const slide = pptx.addSlide();
 
   // Apply custom background if specified
   if (customStyle.background) {
@@ -306,7 +306,7 @@ function createBulletSlide(pptx, props, theme, customStyle = {}) {
  * Two Column Slide (Using Master Layout)
  */
 function createTwoColumnSlide(pptx, props, theme, customStyle = {}) {
-  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
+  const slide = pptx.addSlide({});
 
   // Apply two column layout
   const { leftColumn, rightColumn } = applyTwoColumnLayout(slide, props.title, theme);
@@ -445,7 +445,7 @@ function createThankYouSlide(pptx, props, theme, customStyle = {}) {
  * Auto-detects layout based on image count if arrangement not specified
  */
 function createImageSlide(pptx, props, theme, customStyle = {}) {
-  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
+  const slide = pptx.addSlide({});
 
   // Auto-detect arrangement based on image count if not specified
   let arrangement = props.arrangement;
@@ -586,7 +586,7 @@ function createImageSlide(pptx, props, theme, customStyle = {}) {
  * Chart Slide (Native PptxGenJS Charts)
  */
 function createChartSlide(pptx, props, theme, customStyle = {}) {
-  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
+  const slide = pptx.addSlide({});
 
   const layout = applyChartLayout(slide, props.title, theme, props.chartType || 'bar');
 
@@ -634,7 +634,7 @@ function createChartSlide(pptx, props, theme, customStyle = {}) {
  * Table Slide (Enhanced Tables)
  */
 function createTableSlide(pptx, props, theme, customStyle = {}) {
-  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
+  const slide = pptx.addSlide({});
 
   const layout = applyTableLayout(slide, props.title, theme);
 
@@ -726,7 +726,7 @@ function createQuoteSlide(pptx, props, theme, customStyle = {}) {
  * Side-by-side comparison (Before/After, VS, etc.)
  */
 function createComparisonSlide(pptx, props, theme, customStyle = {}) {
-  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
+  const slide = pptx.addSlide({});
 
   // Apply comparison layout
   const { leftSide, rightSide } = applyComparisonLayout(slide, props.title, theme, {
@@ -804,7 +804,7 @@ function createComparisonSlide(pptx, props, theme, customStyle = {}) {
  * Horizontal timeline with events/milestones
  */
 function createTimelineSlide(pptx, props, theme, customStyle = {}) {
-  const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
+  const slide = pptx.addSlide({});
 
   const items = props.items || [];
   const { items: timelineItems } = applyTimelineLayout(slide, props.title, theme, items.length);
