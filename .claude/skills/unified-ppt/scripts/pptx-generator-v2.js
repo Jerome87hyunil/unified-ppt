@@ -109,22 +109,78 @@ function createTitleSlide(pptx, props, theme, customStyle = {}) {
 function createContentSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
-  // Apply standard layout
-  const { contentArea } = applyStandardLayout(slide, props.title, theme);
+  // Apply custom background if specified
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  }
+
+  // Accent bar (left) - use custom color if specified
+  if (customStyle.accentBar !== false) {
+    const { addAccentBar } = require('./visual-helpers');
+    const accentColor = customStyle.accentBar?.color || theme.colors.accent;
+    const tempTheme = { ...theme, colors: { ...theme.colors, accent: accentColor } };
+    addAccentBar(slide, 'left', tempTheme);
+  }
+
+  // Title styling
+  const titleStyle = mergeSlideStyles(theme.typography.h2, customStyle.title || {});
+  const titleFontFamily = customStyle.title?.fontFamily || theme.typography.fontFamily.heading;
+  const titleColor = customStyle.title?.color || theme.colors.primary;
+  const titleAlign = customStyle.title?.align || 'left';
+
+  // Add title with underline
+  const titleY = 0.5;
+  slide.addText(props.title, {
+    x: 0.6,
+    y: titleY,
+    w: 8.5,
+    h: titleStyle.fontSize / 72,
+    ...applyTypography(
+      titleStyle,
+      titleFontFamily,
+      titleColor,
+      {
+        align: titleAlign,
+        ...(theme.effects.textShadow && { shadow: theme.effects.textShadow })
+      }
+    )
+  });
+
+  // Title underline
+  const { addDivider } = require('./visual-helpers');
+  const dividerColor = customStyle.divider?.color || theme.colors.accent;
+  const tempThemeForDivider = { ...theme, colors: { ...theme.colors, accent: dividerColor } };
+  addDivider(slide, 0.6, titleY + titleStyle.fontSize / 72 + 0.1, 8.5 * 0.3, tempThemeForDivider, 'medium');
 
   // Content body with adaptive typography
   const bodyText = Array.isArray(props.body) ? props.body.join('\n\n') : props.body;
 
+  // Base body typography
+  const baseBodyTypography = customStyle.body?.fontSize
+    ? mergeSlideStyles(theme.typography.bodyLarge, customStyle.body)
+    : theme.typography.bodyLarge;
+
   // Apply adaptive typography for long content
   const adaptedTypography = calculateAdaptiveTypography(
     bodyText,
-    theme.typography.bodyLarge,
+    baseBodyTypography,
     {
-      maxLength: 600,
-      minFontSize: 16,
-      minScaleFactor: 0.85
+      maxLength: customStyle.body?.maxLength || 600,
+      minFontSize: customStyle.body?.minFontSize || 16,
+      minScaleFactor: customStyle.body?.minScaleFactor || 0.85
     }
   );
+
+  const bodyFontFamily = customStyle.body?.fontFamily || theme.typography.fontFamily.body;
+  const bodyColor = customStyle.body?.color || theme.colors.text.dark;
+  const bodyAlign = customStyle.body?.align || 'left';
+
+  const contentArea = {
+    x: 0.6,
+    y: 1.5,
+    w: 8.9,
+    h: 5.0
+  };
 
   slide.addText(bodyText, {
     x: contentArea.x,
@@ -133,9 +189,10 @@ function createContentSlide(pptx, props, theme, customStyle = {}) {
     h: contentArea.h,
     ...applyTypography(
       adaptedTypography,
-      theme.typography.fontFamily.body,
-      theme.colors.text.dark,
+      bodyFontFamily,
+      bodyColor,
       {
+        align: bodyAlign,
         valign: 'top'
       }
     )
@@ -148,23 +205,90 @@ function createContentSlide(pptx, props, theme, customStyle = {}) {
 function createBulletSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({ masterName: 'CONTENT_MASTER' });
 
-  // Apply standard layout
-  const { contentArea } = applyStandardLayout(slide, props.title, theme, {
-    contentY: 1.8,
-    contentH: 4.7
+  // Apply custom background if specified
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  }
+
+  // Accent bar (left) - use custom color if specified
+  if (customStyle.accentBar !== false) {
+    const { addAccentBar } = require('./visual-helpers');
+    const accentColor = customStyle.accentBar?.color || theme.colors.accent;
+    const tempTheme = { ...theme, colors: { ...theme.colors, accent: accentColor } };
+    addAccentBar(slide, 'left', tempTheme);
+  }
+
+  // Title styling
+  const titleStyle = mergeSlideStyles(theme.typography.h2, customStyle.title || {});
+  const titleFontFamily = customStyle.title?.fontFamily || theme.typography.fontFamily.heading;
+  const titleColor = customStyle.title?.color || theme.colors.primary;
+  const titleAlign = customStyle.title?.align || 'left';
+
+  // Add title with underline
+  const titleY = 0.5;
+  slide.addText(props.title, {
+    x: 0.6,
+    y: titleY,
+    w: 8.5,
+    h: titleStyle.fontSize / 72,
+    ...applyTypography(
+      titleStyle,
+      titleFontFamily,
+      titleColor,
+      {
+        align: titleAlign,
+        ...(theme.effects.textShadow && { shadow: theme.effects.textShadow })
+      }
+    )
   });
+
+  // Title underline
+  const { addDivider } = require('./visual-helpers');
+  const dividerColor = customStyle.divider?.color || theme.colors.accent;
+  const tempThemeForDivider = { ...theme, colors: { ...theme.colors, accent: dividerColor } };
+  addDivider(slide, 0.6, titleY + titleStyle.fontSize / 72 + 0.1, 8.5 * 0.3, tempThemeForDivider, 'medium');
+
+  // Content area for bullets
+  const contentArea = {
+    x: 0.6,
+    y: 1.8,
+    w: 8.9,
+    h: 4.7
+  };
 
   // Styled bullets
   let currentY = contentArea.y;
-  const lineHeight = 0.4;
+  const lineHeight = customStyle.bullets?.lineHeight || 0.4;
+
+  // Create custom theme for bullets if colors are specified
+  const bulletTheme = customStyle.bullets ? {
+    ...theme,
+    colors: {
+      ...theme.colors,
+      primary: customStyle.bullets.primaryColor || theme.colors.primary,
+      secondary: customStyle.bullets.secondaryColor || theme.colors.secondary,
+      muted: customStyle.bullets.mutedColor || theme.colors.muted
+    },
+    typography: {
+      ...theme.typography,
+      body: customStyle.bullets.fontSize ? {
+        ...theme.typography.body,
+        fontSize: customStyle.bullets.fontSize
+      } : theme.typography.body,
+      fontFamily: {
+        ...theme.typography.fontFamily,
+        body: customStyle.bullets.fontFamily || theme.typography.fontFamily.body
+      }
+    }
+  } : theme;
 
   props.bullets.forEach((bullet, index) => {
     const level = bullet.level || 0;
 
     // Determine icon type based on level
     let iconType = null;
-    if (level === 0) {
-      iconType = 'arrow';  // Top level bullets get arrows
+    if (level === 0 && customStyle.bullets?.iconType !== false) {
+      iconType = customStyle.bullets?.iconType || 'arrow';  // Top level bullets get arrows
     }
 
     addStyledBullet(
@@ -173,7 +297,7 @@ function createBulletSlide(pptx, props, theme, customStyle = {}) {
       contentArea.x,
       currentY,
       level,
-      theme,
+      bulletTheme,
       iconType
     );
 

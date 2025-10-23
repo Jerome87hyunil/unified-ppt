@@ -60,7 +60,8 @@ function addTitleWithUnderline(slide, text, x, y, width, theme, typography = 'h1
 
 /**
  * Add gradient background to slide
- * Requires PptxGenJS-compatible gradient format from convertGradientToPptxGenJS
+ * Uses a full-slide rectangle shape with gradient fill
+ * (slide.background doesn't support gradients in PptxGenJS v3.12)
  */
 function addGradientBackground(slide, pptxGradient) {
   if (!pptxGradient || pptxGradient.type !== 'gradient') {
@@ -68,9 +69,16 @@ function addGradientBackground(slide, pptxGradient) {
     return;
   }
 
-  slide.background = {
-    fill: pptxGradient
-  };
+  // Add a full-slide rectangle with gradient fill as background
+  // This goes behind all other content
+  slide.addShape('rect', {
+    x: 0,
+    y: 0,
+    w: '100%',
+    h: '100%',
+    fill: pptxGradient,
+    line: { type: 'none' }  // No border
+  });
 }
 
 /**
@@ -440,19 +448,32 @@ function applyBackground(slide, backgroundConfig, theme) {
   }
 
   // Case 2: Gradient by name (from theme)
-  // TODO: PptxGenJS gradient support needs more investigation
-  // Currently falling back to solid color
   if (backgroundConfig.gradient && typeof backgroundConfig.gradient === 'string') {
-    console.warn(`⚠️ Gradient backgrounds not yet fully supported. Using primary color. (Requested: ${backgroundConfig.gradient})`);
-    slide.background = { fill: theme.colors.primary.replace('#', '') };
+    const gradientDef = theme.gradients[backgroundConfig.gradient];
+    if (gradientDef) {
+      const pptxGradient = convertGradientToPptxGenJS(gradientDef);
+      if (pptxGradient) {
+        addGradientBackground(slide, pptxGradient);
+      } else {
+        console.warn(`⚠️ Failed to convert gradient "${backgroundConfig.gradient}". Using primary color.`);
+        slide.background = { fill: theme.colors.primary.replace('#', '') };
+      }
+    } else {
+      console.warn(`⚠️ Gradient "${backgroundConfig.gradient}" not found in theme. Using primary color.`);
+      slide.background = { fill: theme.colors.primary.replace('#', '') };
+    }
     return;
   }
 
   // Case 3: Custom gradient definition
-  // TODO: PptxGenJS gradient support needs more investigation
   if (backgroundConfig.gradient && typeof backgroundConfig.gradient === 'object') {
-    console.warn(`⚠️ Custom gradient backgrounds not yet fully supported. Using primary color.`);
-    slide.background = { fill: theme.colors.primary.replace('#', '') };
+    const pptxGradient = convertGradientToPptxGenJS(backgroundConfig.gradient);
+    if (pptxGradient) {
+      addGradientBackground(slide, pptxGradient);
+    } else {
+      console.warn(`⚠️ Failed to convert custom gradient. Using primary color.`);
+      slide.background = { fill: theme.colors.primary.replace('#', '') };
+    }
     return;
   }
 

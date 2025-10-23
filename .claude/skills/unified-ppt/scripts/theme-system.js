@@ -236,29 +236,30 @@ const TYPOGRAPHY_SCALE = {
  * Convert gradient definition to PptxGenJS format
  * Transforms theme gradient format to native PptxGenJS gradient API
  *
- * PptxGenJS gradient format (from official GitHub example):
+ * PptxGenJS gradient format (from official GitHub Issue #102):
  * {
  *   type: 'gradient',
- *   linearAngle: 90,  // Note: linearAngle, not angle!
- *   stops: [          // Note: stops with 'pos', not 'position'!
+ *   stops: [
  *     { pos: 0, color: 'C1F15E' },
  *     { pos: 100, color: '7FA03E' }
- *   ]
+ *   ],
+ *   linearAngle: 90,
+ *   linearScaled: false
  * }
  * Source: https://github.com/gitbrent/PptxGenJS/issues/102
  */
 function convertGradientToPptxGenJS(gradientDef) {
   if (!gradientDef || !gradientDef.stops) return null;
 
-  // Convert 'position' to 'pos' and map to PptxGenJS format
+  // Convert 'position' to 'pos' and ensure colors are without '#'
   return {
     type: 'gradient',
-    linearAngle: gradientDef.angle || 90,
     stops: gradientDef.stops.map(stop => ({
       pos: stop.position,
-      color: stop.color
-      // PptxGenJS doesn't support transparency in stops for backgrounds
-    }))
+      color: stop.color.replace('#', '')  // Remove '#' from HEX colors
+    })),
+    linearAngle: gradientDef.angle || 90,
+    linearScaled: false  // Required by PptxGenJS
   };
 }
 

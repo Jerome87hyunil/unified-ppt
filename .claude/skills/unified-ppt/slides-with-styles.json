@@ -57,10 +57,24 @@
         ]
       },
       "style": {
+        "background": "#FEF3C7",
         "title": {
           "fontSize": 32,
-          "color": "#1F2937",
+          "color": "#92400E",
           "bold": true
+        },
+        "bullets": {
+          "fontSize": 16,
+          "fontFamily": "Arial",
+          "primaryColor": "#92400E",
+          "secondaryColor": "#B45309",
+          "lineHeight": 0.45
+        },
+        "accentBar": {
+          "color": "#F59E0B"
+        },
+        "divider": {
+          "color": "#F59E0B"
         }
       }
     },
@@ -74,8 +88,31 @@
           "지원하는 스타일 속성:",
           "• background: HEX 색상, gradient (hero/accent/subtle), 또는 custom gradient",
           "• title/subtitle: fontSize, fontFamily, color, bold, italic, align",
+          "• body: fontSize, fontFamily, color, align",
+          "• bullets: fontSize, fontFamily, primaryColor, secondaryColor, lineHeight",
+          "• accentBar/divider: color",
           "• 모든 속성은 선택적이며, 미지정 시 테마 기본값 사용"
         ]
+      },
+      "style": {
+        "background": "#EFF6FF",
+        "title": {
+          "fontSize": 36,
+          "fontFamily": "Arial",
+          "color": "#1E40AF",
+          "bold": true
+        },
+        "body": {
+          "fontSize": 18,
+          "fontFamily": "Arial",
+          "color": "#1E3A8A"
+        },
+        "accentBar": {
+          "color": "#3B82F6"
+        },
+        "divider": {
+          "color": "#3B82F6"
+        }
       }
     },
     {
