@@ -167,25 +167,33 @@ Unified PPT Generator - 프로젝트 디자인 시스템을 반영한 PPT 자동
 옵션:
   --project <경로>      프로젝트 루트 경로 (기본: 현재 디렉토리)
   --slides <JSON>       슬라이드 정의 JSON 파일 경로
-  --output <파일명>     출력 PPTX 파일명 (기본: presentation.pptx)
+  --output <파일명>     출력 PPTX 파일명 (기본: unified-ppt/presentation.pptx)
   --theme <테마>        테마 선택 (professional|minimal|corporate, 기본: professional)
   --help, -h           도움말 표시
+
+출력 폴더:
+  모든 결과물은 프로젝트 루트의 'unified-ppt' 폴더에 자동 생성됩니다.
+  예: /your/project/unified-ppt/presentation.pptx
 
 예제:
   # 현재 디렉토리 프로젝트 분석 + 샘플 PPT 생성
   node unified-ppt.js
+  → 출력: ./unified-ppt/presentation.pptx
 
   # 슬라이드 정의 파일 사용
   node unified-ppt.js --slides slides.json --output my-ppt.pptx
+  → 출력: ./unified-ppt/my-ppt.pptx
 
   # 특정 프로젝트 분석
   node unified-ppt.js --project /path/to/project --slides slides.json
+  → 출력: /path/to/project/unified-ppt/presentation.pptx
 
 특징:
   ✅ PptxGenJS를 사용한 네이티브 PowerPoint 생성
   ✅ 완벽한 편집 가능
   ✅ 높은 품질
   ✅ Playwright/html2pptx 불필요
+  ✅ 결과물이 unified-ppt 폴더에 정리되어 관리 용이
     `);
     process.exit(0);
   }
@@ -199,9 +207,23 @@ Unified PPT Generator - 프로젝트 디자인 시스템을 반영한 PPT 자동
     ? args[args.indexOf('--slides') + 1]
     : null;
 
-  const outputPath = args.includes('--output')
-    ? args[args.indexOf('--output') + 1]
-    : path.join(process.cwd(), 'presentation.pptx');
+  // unified-ppt 출력 폴더 생성
+  const outputDir = path.join(projectRoot, 'unified-ppt');
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  // 출력 경로 설정 (기본: unified-ppt/presentation.pptx)
+  let outputPath;
+  if (args.includes('--output')) {
+    const userOutput = args[args.indexOf('--output') + 1];
+    // 절대 경로면 그대로, 상대 경로면 unified-ppt 폴더 안에
+    outputPath = path.isAbsolute(userOutput)
+      ? userOutput
+      : path.join(outputDir, userOutput);
+  } else {
+    outputPath = path.join(outputDir, 'presentation.pptx');
+  }
 
   const themeName = args.includes('--theme')
     ? args[args.indexOf('--theme') + 1]

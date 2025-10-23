@@ -139,7 +139,10 @@ node scripts/unified-ppt.js
 This will:
 1. Analyze the current directory's design system
 2. Generate 6 sample slides
-3. Output `presentation.pptx` in the current directory
+3. Create `unified-ppt` folder in the project root
+4. Output `unified-ppt/presentation.pptx`
+
+**📁 Output Location**: All generated files are saved to `{project-root}/unified-ppt/` for easy organization and clean project structure.
 
 ### With Slide Definition File
 
@@ -148,6 +151,8 @@ To generate from a JSON slide definition:
 ```bash
 node scripts/unified-ppt.js --slides slides.json --output my-presentation.pptx
 ```
+
+Output: `./unified-ppt/my-presentation.pptx`
 
 ### With Theme Selection
 
@@ -159,6 +164,8 @@ node scripts/unified-ppt.js --theme minimal       # Clean monochrome
 node scripts/unified-ppt.js --theme corporate     # Professional navy
 ```
 
+Output: `./unified-ppt/presentation.pptx`
+
 ### Analyzing Different Project
 
 To analyze a different project's design system:
@@ -166,6 +173,8 @@ To analyze a different project's design system:
 ```bash
 node scripts/unified-ppt.js --project /path/to/project --slides slides.json --output output.pptx
 ```
+
+Output: `/path/to/project/unified-ppt/output.pptx`
 
 ### Automatic Dependency Installation
 
