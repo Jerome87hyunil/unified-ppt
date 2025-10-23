@@ -3,143 +3,120 @@
     {
       "type": "title",
       "props": {
-        "title": "Custom Styled Presentation",
-        "subtitle": "플랫폼 독립적 스타일 시스템 데모"
-      },
-      "style": {
-        "background": {
-          "gradient": "hero"
-        },
-        "title": {
-          "fontSize": 56,
-          "fontFamily": "Arial",
-          "color": "#FFFFFF",
-          "bold": true,
-          "align": "center"
-        },
-        "subtitle": {
-          "fontSize": 28,
-          "fontFamily": "Arial",
-          "color": "#E0E0E0",
-          "italic": true,
-          "align": "center"
-        }
-      }
-    },
-    {
-      "type": "title",
-      "props": {
-        "title": "Solid Color Background",
-        "subtitle": "단색 배경 예제"
+        "title": "커스텀 스타일 예제",
+        "subtitle": "JSON에서 직접 스타일 지정하기"
       },
       "style": {
         "background": "#1E3A8A",
         "title": {
-          "fontSize": 48,
-          "color": "#FFFFFF"
+          "color": "#FBBF24",
+          "fontSize": 54,
+          "fontFamily": "Arial",
+          "align": "center"
         },
         "subtitle": {
+          "color": "#E5E7EB",
           "fontSize": 24,
-          "color": "#93C5FD"
-        }
-      }
-    },
-    {
-      "type": "bullet",
-      "props": {
-        "title": "Custom Typography",
-        "bullets": [
-          { "text": "플랫폼 독립적 스타일 정의", "level": 0 },
-          { "text": "fontSize, fontFamily, color 지정", "level": 1 },
-          { "text": "JSON만으로 완전한 재현 가능", "level": 1 },
-          { "text": "하위 호환성 보장", "level": 0 },
-          { "text": "style 없으면 테마 기본값 사용", "level": 1 }
-        ]
-      },
-      "style": {
-        "background": "#FEF3C7",
-        "title": {
-          "fontSize": 32,
-          "color": "#92400E",
-          "bold": true
-        },
-        "bullets": {
-          "fontSize": 16,
-          "fontFamily": "Arial",
-          "primaryColor": "#92400E",
-          "secondaryColor": "#B45309",
-          "lineHeight": 0.45
-        },
-        "accentBar": {
-          "color": "#F59E0B"
-        },
-        "divider": {
-          "color": "#F59E0B"
+          "align": "center"
         }
       }
     },
     {
       "type": "content",
       "props": {
-        "title": "Style Attributes",
+        "title": "커스텀 배경과 텍스트",
         "body": [
-          "이 프레젠테이션은 slides.json에 정의된 상세한 스타일 속성을 사용합니다.",
+          "이 슬라이드는 JSON에서 직접 스타일을 지정했습니다.",
           "",
-          "지원하는 스타일 속성:",
-          "• background: HEX 색상, gradient (hero/accent/subtle), 또는 custom gradient",
-          "• title/subtitle: fontSize, fontFamily, color, bold, italic, align",
-          "• body: fontSize, fontFamily, color, align",
-          "• bullets: fontSize, fontFamily, primaryColor, secondaryColor, lineHeight",
-          "• accentBar/divider: color",
-          "• 모든 속성은 선택적이며, 미지정 시 테마 기본값 사용"
+          "배경색, 제목 색상, 본문 색상 모두 커스터마이징 가능합니다."
         ]
       },
       "style": {
-        "background": "#EFF6FF",
+        "background": "#F3F4F6",
+        "accentBar": {
+          "color": "#EF4444"
+        },
         "title": {
+          "color": "#DC2626",
           "fontSize": 36,
-          "fontFamily": "Arial",
-          "color": "#1E40AF",
-          "bold": true
+          "fontFamily": "Arial"
         },
         "body": {
-          "fontSize": 18,
-          "fontFamily": "Arial",
-          "color": "#1E3A8A"
-        },
-        "accentBar": {
-          "color": "#3B82F6"
-        },
-        "divider": {
-          "color": "#3B82F6"
+          "color": "#374151",
+          "fontSize": 20,
+          "fontFamily": "Arial"
         }
       }
     },
     {
-      "type": "title",
+      "type": "bullet",
       "props": {
-        "title": "Custom Gradient",
-        "subtitle": "사용자 정의 그라데이션 배경"
+        "title": "커스텀 불릿 포인트",
+        "bullets": [
+          { "text": "Primary 색상 불릿", "level": 0 },
+          { "text": "Secondary 색상 서브 불릿", "level": 1 },
+          { "text": "Accent 색상 불릿", "level": 0 },
+          { "text": "또 다른 서브 불릿", "level": 1 }
+        ]
       },
       "style": {
-        "background": {
-          "gradient": {
-            "angle": 135,
-            "stops": [
-              { "color": "8B5CF6", "position": 0, "transparency": 0 },
-              { "color": "EC4899", "position": 50, "transparency": 0 },
-              { "color": "EF4444", "position": 100, "transparency": 0 }
-            ]
-          }
+        "background": "#FFFFFF",
+        "accentBar": {
+          "color": "#10B981"
         },
         "title": {
-          "fontSize": 52,
-          "color": "#FFFFFF",
-          "bold": true
+          "color": "#059669",
+          "fontSize": 32
         },
-        "subtitle": {
-          "fontSize": 26,
-          "color": "#F3E8FF"
+        "bullets": {
+          "primaryColor": "#10B981",
+          "secondaryColor": "#6B7280",
+          "mutedColor": "#9CA3AF",
+          "fontSize": 18,
+          "fontFamily": "Arial",
+          "lineHeight": 0.45,
+          "iconType": "arrow"
+        }
+      }
+    },
+    {
+      "type": "section",
+      "props": {
+        "title": "섹션 구분",
+        "number": "02"
+      },
+      "style": {
+        "background": "#7C3AED",
+        "title": {
+          "color": "#FFFFFF",
+          "fontSize": 48
+        },
+        "badge": {
+          "backgroundColor": "#A78BFA",
+          "textColor": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "type": "twoColumn",
+      "props": {
+        "title": "2단 레이아웃",
+        "leftContent": "왼쪽 컬럼\n\n커스텀 색상 적용",
+        "rightContent": "오른쪽 컬럼\n\n배경과 텍스트 색상 변경"
+      },
+      "style": {
+        "background": "#FEF3C7",
+        "title": {
+          "color": "#92400E",
+          "fontSize": 32
+        },
+        "leftColumn": {
+          "backgroundColor": "#FCD34D",
+          "textColor": "#78350F"
+        },
+        "rightColumn": {
+          "backgroundColor": "#FBBF24",
+          "textColor": "#78350F"
         }
       }
     },
@@ -147,7 +124,18 @@
       "type": "thankYou",
       "props": {
         "message": "감사합니다!",
-        "contact": "Style System v1.0"
+        "contact": "style@example.com"
+      },
+      "style": {
+        "background": "#1F2937",
+        "message": {
+          "color": "#10B981",
+          "fontSize": 56
+        },
+        "contact": {
+          "color": "#9CA3AF",
+          "fontSize": 20
+        }
       }
     }
   ]

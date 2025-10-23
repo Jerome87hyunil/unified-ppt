@@ -447,6 +447,11 @@ function createThankYouSlide(pptx, props, theme, customStyle = {}) {
 function createImageSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({});
 
+  // Apply background
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  }
+
   // Auto-detect arrangement based on image count if not specified
   let arrangement = props.arrangement;
   if (!arrangement) {
@@ -462,7 +467,7 @@ function createImageSlide(pptx, props, theme, customStyle = {}) {
     }
   }
 
-  const layout = applyImageShowcaseLayout(slide, props.title, theme, arrangement);
+  const layout = applyImageShowcaseLayout(slide, props.title, theme, arrangement, customStyle.title);
 
   switch (arrangement) {
     case 'full':
@@ -480,17 +485,22 @@ function createImageSlide(pptx, props, theme, customStyle = {}) {
 
       // Caption
       if (props.caption) {
+        const captionColor = customStyle.caption?.color || theme.colors.muted;
+        const captionFontSize = customStyle.caption?.fontSize || theme.typography.caption.fontSize;
+        const captionFontFamily = customStyle.caption?.fontFamily || theme.typography.fontFamily.body;
+        const captionAlign = customStyle.caption?.align || 'center';
+        const captionItalic = customStyle.caption?.italic !== false;
+
         slide.addText(props.caption, {
           x: layout.caption.x,
           y: layout.caption.y,
           w: layout.caption.w,
           h: layout.caption.h,
-          ...applyTypography(
-            theme.typography.caption,
-            theme.typography.fontFamily.body,
-            theme.colors.muted,
-            { align: 'center', italic: true }
-          )
+          fontSize: captionFontSize,
+          color: captionColor.replace('#', ''),
+          fontFace: captionFontFamily,
+          align: captionAlign,
+          italic: captionItalic
         });
       }
       break;
@@ -518,17 +528,22 @@ function createImageSlide(pptx, props, theme, customStyle = {}) {
       }
 
       if (props.caption) {
+        const captionColor = customStyle.caption?.color || theme.colors.muted;
+        const captionFontSize = customStyle.caption?.fontSize || theme.typography.caption.fontSize;
+        const captionFontFamily = customStyle.caption?.fontFamily || theme.typography.fontFamily.body;
+        const captionAlign = customStyle.caption?.align || 'center';
+        const captionItalic = customStyle.caption?.italic !== false;
+
         slide.addText(props.caption, {
           x: layout.caption.x,
           y: layout.caption.y,
           w: layout.caption.w,
           h: layout.caption.h,
-          ...applyTypography(
-            theme.typography.caption,
-            theme.typography.fontFamily.body,
-            theme.colors.muted,
-            { align: 'center', italic: true }
-          )
+          fontSize: captionFontSize,
+          color: captionColor.replace('#', ''),
+          fontFace: captionFontFamily,
+          align: captionAlign,
+          italic: captionItalic
         });
       }
       break;
@@ -588,27 +603,42 @@ function createImageSlide(pptx, props, theme, customStyle = {}) {
 function createChartSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({});
 
-  const layout = applyChartLayout(slide, props.title, theme, props.chartType || 'bar');
+  // Apply background
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  }
+
+  const layout = applyChartLayout(slide, props.title, theme, props.chartType || 'bar', customStyle.title);
 
   // Prepare chart data
   const chartData = props.data || [];
 
-  // Chart options based on theme
+  // Chart colors (customizable)
+  const defaultColors = theme.colors.chart || [
+    theme.colors.primary,
+    theme.colors.accent,
+    theme.colors.secondary
+  ];
+  const chartColors = customStyle.chartColors || defaultColors;
+
+  // Grid line color
+  const gridColor = customStyle.gridColor || theme.colors.muted;
+
+  // Chart options based on theme + custom styles
   const chartOptions = {
     x: layout.chartArea.x,
     y: layout.chartArea.y,
     w: layout.chartArea.w,
     h: layout.chartArea.h,
-    chartColors: theme.colors.chart || [
-      theme.colors.primary,
-      theme.colors.accent,
-      theme.colors.secondary
-    ].map(c => c.replace('#', '')),
-    showLegend: true,
+    chartColors: chartColors.map(c => c.replace('#', '')),
+    showLegend: customStyle.showLegend !== false,
     showTitle: false,
-    valAxisLineShow: true,
-    catAxisLineShow: true,
-    valGridLine: { style: 'dot', color: theme.colors.muted.replace('#', '') }
+    valAxisLineShow: customStyle.showAxisLines !== false,
+    catAxisLineShow: customStyle.showAxisLines !== false,
+    valGridLine: {
+      style: customStyle.gridStyle || 'dot',
+      color: gridColor.replace('#', '')
+    }
   };
 
   // Add chart based on type
@@ -636,14 +666,42 @@ function createChartSlide(pptx, props, theme, customStyle = {}) {
 function createTableSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({});
 
-  const layout = applyTableLayout(slide, props.title, theme);
+  // Apply background
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  }
+
+  const layout = applyTableLayout(slide, props.title, theme, customStyle.title);
 
   // Prepare table data
   const tableData = [];
 
+  // Border styling
+  const borderColor = customStyle.border?.color || theme.colors.muted;
+  const borderWidth = customStyle.border?.width || 1;
+
+  // Body styling
+  const bodyBgColor = customStyle.body?.backgroundColor || theme.colors.background.main;
+  const bodyTextColor = customStyle.body?.textColor || theme.colors.text.dark;
+  const bodyFontSize = customStyle.body?.fontSize || theme.typography.body.fontSize;
+
   // Add header row
   if (props.headers) {
-    tableData.push(props.headers);
+    const headerBgColor = customStyle.header?.backgroundColor || theme.colors.primary;
+    const headerTextColor = customStyle.header?.textColor || '#FFFFFF';
+    const headerFontSize = customStyle.header?.fontSize || theme.typography.body.fontSize;
+
+    // Style header cells
+    const styledHeaders = props.headers.map(cell => ({
+      text: cell,
+      options: {
+        fill: { color: headerBgColor.replace('#', '') },
+        color: headerTextColor.replace('#', ''),
+        fontSize: headerFontSize,
+        bold: true
+      }
+    }));
+    tableData.push(styledHeaders);
   }
 
   // Add data rows
@@ -651,20 +709,20 @@ function createTableSlide(pptx, props, theme, customStyle = {}) {
     tableData.push(...props.rows);
   }
 
-  // Table options based on theme
+  // Table options based on theme + custom styles
   const tableOptions = {
     x: layout.tableArea.x,
     y: layout.tableArea.y,
     w: layout.tableArea.w,
     h: layout.tableArea.h,
     colW: props.columnWidths || undefined,
-    rowH: 0.4,
-    border: { pt: 1, color: theme.colors.muted.replace('#', '') },
-    fill: { color: theme.colors.background.main.replace('#', '') },
-    color: theme.colors.text.dark.replace('#', ''),
-    fontSize: theme.typography.body.fontSize,
+    rowH: customStyle.rowHeight || 0.4,
+    border: { pt: borderWidth, color: borderColor.replace('#', '') },
+    fill: { color: bodyBgColor.replace('#', '') },
+    color: bodyTextColor.replace('#', ''),
+    fontSize: bodyFontSize,
     fontFace: theme.typography.fontFamily.body,
-    align: 'left',
+    align: customStyle.align || 'left',
     valign: 'middle'
   };
 
@@ -685,6 +743,11 @@ function createTableSlide(pptx, props, theme, customStyle = {}) {
 function createQuoteSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide();
 
+  // Apply background
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  }
+
   // Apply quote layout
   const { quoteArea, authorArea } = applyQuoteLayout(slide, theme, {
     showQuoteMark: props.showQuoteMark !== false
@@ -692,30 +755,41 @@ function createQuoteSlide(pptx, props, theme, customStyle = {}) {
 
   // Quote text (large, centered, italic)
   const quoteText = props.quote || props.text;
+  const quoteColor = customStyle.quote?.color || theme.colors.text.dark;
+  const quoteFontSize = customStyle.quote?.fontSize || 32;
+  const quoteFontFamily = customStyle.quote?.fontFamily || 'Georgia';
+  const quoteItalic = customStyle.quote?.italic !== false;
+  const quoteAlign = customStyle.quote?.align || 'center';
+
   slide.addText(quoteText, {
     x: quoteArea.x,
     y: quoteArea.y,
     w: quoteArea.w,
     h: quoteArea.h,
-    fontSize: 32,
-    italic: true,
-    color: theme.colors.text.dark.replace('#', ''),
-    fontFace: 'Georgia',
-    align: 'center',
+    fontSize: quoteFontSize,
+    italic: quoteItalic,
+    color: quoteColor.replace('#', ''),
+    fontFace: quoteFontFamily,
+    align: quoteAlign,
     valign: 'middle'
   });
 
   // Author (smaller, right-aligned)
   if (props.author) {
+    const authorColor = customStyle.author?.color || theme.colors.muted;
+    const authorFontSize = customStyle.author?.fontSize || theme.typography.h3.fontSize;
+    const authorFontFamily = customStyle.author?.fontFamily || theme.typography.fontFamily.body;
+    const authorAlign = customStyle.author?.align || 'right';
+
     slide.addText(`— ${props.author}`, {
       x: authorArea.x,
       y: authorArea.y,
       w: authorArea.w,
       h: authorArea.h,
-      fontSize: theme.typography.h3.fontSize,
-      color: theme.colors.muted.replace('#', ''),
-      fontFace: theme.typography.fontFamily.body,
-      align: 'right',
+      fontSize: authorFontSize,
+      color: authorColor.replace('#', ''),
+      fontFace: authorFontFamily,
+      align: authorAlign,
       valign: 'middle'
     });
   }
@@ -728,11 +802,16 @@ function createQuoteSlide(pptx, props, theme, customStyle = {}) {
 function createComparisonSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({});
 
+  // Apply background
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  }
+
   // Apply comparison layout
   const { leftSide, rightSide } = applyComparisonLayout(slide, props.title, theme, {
     leftLabel: props.leftLabel || 'Before',
     rightLabel: props.rightLabel || 'After'
-  });
+  }, customStyle.title);
 
   // Left side content
   if (props.leftContent) {
@@ -740,17 +819,19 @@ function createComparisonSlide(pptx, props, theme, customStyle = {}) {
       ? props.leftContent.join('\n\n')
       : props.leftContent;
 
+    const leftColor = customStyle.leftContent?.color || theme.colors.text.dark;
+    const leftFontSize = customStyle.leftContent?.fontSize || theme.typography.body.fontSize;
+    const leftFontFamily = customStyle.leftContent?.fontFamily || theme.typography.fontFamily.body;
+
     slide.addText(leftText, {
       x: leftSide.x,
       y: leftSide.y,
       w: leftSide.w,
       h: leftSide.h,
-      ...applyTypography(
-        theme.typography.body,
-        theme.typography.fontFamily.body,
-        theme.colors.text.dark,
-        { valign: 'top' }
-      )
+      fontSize: leftFontSize,
+      color: leftColor.replace('#', ''),
+      fontFace: leftFontFamily,
+      valign: 'top'
     });
   }
 
@@ -772,17 +853,19 @@ function createComparisonSlide(pptx, props, theme, customStyle = {}) {
       ? props.rightContent.join('\n\n')
       : props.rightContent;
 
+    const rightColor = customStyle.rightContent?.color || theme.colors.text.dark;
+    const rightFontSize = customStyle.rightContent?.fontSize || theme.typography.body.fontSize;
+    const rightFontFamily = customStyle.rightContent?.fontFamily || theme.typography.fontFamily.body;
+
     slide.addText(rightText, {
       x: rightSide.x,
       y: rightSide.y,
       w: rightSide.w,
       h: rightSide.h,
-      ...applyTypography(
-        theme.typography.body,
-        theme.typography.fontFamily.body,
-        theme.colors.text.dark,
-        { valign: 'top' }
-      )
+      fontSize: rightFontSize,
+      color: rightColor.replace('#', ''),
+      fontFace: rightFontFamily,
+      valign: 'top'
     });
   }
 
@@ -806,8 +889,18 @@ function createComparisonSlide(pptx, props, theme, customStyle = {}) {
 function createTimelineSlide(pptx, props, theme, customStyle = {}) {
   const slide = pptx.addSlide({});
 
+  // Apply background
+  if (customStyle.background) {
+    applyBackground(slide, customStyle.background, theme);
+  }
+
   const items = props.items || [];
-  const { items: timelineItems } = applyTimelineLayout(slide, props.title, theme, items.length);
+  const { items: timelineItems } = applyTimelineLayout(slide, props.title, theme, items.length, customStyle.title);
+
+  // Node colors
+  const nodeFillColor = customStyle.node?.fillColor || theme.colors.accent;
+  const nodeBorderColor = customStyle.node?.borderColor || theme.colors.primary;
+  const nodeBorderWidth = customStyle.node?.borderWidth || 3;
 
   // Add timeline items
   items.forEach((item, index) => {
@@ -819,25 +912,25 @@ function createTimelineSlide(pptx, props, theme, customStyle = {}) {
       y: layout.node.y,
       w: layout.node.w,
       h: layout.node.h,
-      fill: { color: theme.colors.accent.replace('#', '') },
-      line: { color: theme.colors.primary.replace('#', ''), width: 3 }
+      fill: { color: nodeFillColor.replace('#', '') },
+      line: { color: nodeBorderColor.replace('#', ''), width: nodeBorderWidth }
     });
 
     // Item title (date or milestone name)
+    const itemTitleColor = customStyle.itemTitle?.color || theme.colors.primary;
+    const itemTitleFontSize = customStyle.itemTitle?.fontSize || theme.typography.body.fontSize;
+    const itemTitleFontFamily = customStyle.itemTitle?.fontFamily || theme.typography.fontFamily.heading;
+
     slide.addText(item.title || `Step ${index + 1}`, {
       x: layout.title.x,
       y: layout.title.y,
       w: layout.title.w,
       h: layout.title.h,
-      ...applyTypography(
-        theme.typography.body,
-        theme.typography.fontFamily.heading,
-        theme.colors.primary,
-        {
-          align: 'center',
-          bold: true
-        }
-      )
+      fontSize: itemTitleFontSize,
+      color: itemTitleColor.replace('#', ''),
+      fontFace: itemTitleFontFamily,
+      align: 'center',
+      bold: true
     });
 
     // Item description
@@ -846,14 +939,18 @@ function createTimelineSlide(pptx, props, theme, customStyle = {}) {
         ? item.description.join('\n')
         : item.description;
 
+      const itemDescColor = customStyle.itemDescription?.color || theme.colors.text.dark;
+      const itemDescFontSize = customStyle.itemDescription?.fontSize || theme.typography.bodySmall.fontSize;
+      const itemDescFontFamily = customStyle.itemDescription?.fontFamily || theme.typography.fontFamily.body;
+
       slide.addText(descText, {
         x: layout.content.x,
         y: layout.content.y,
         w: layout.content.w,
         h: layout.content.h,
-        fontSize: theme.typography.bodySmall.fontSize,
-        color: theme.colors.text.dark.replace('#', ''),
-        fontFace: theme.typography.fontFamily.body,
+        fontSize: itemDescFontSize,
+        color: itemDescColor.replace('#', ''),
+        fontFace: itemDescFontFamily,
         align: 'center',
         valign: 'top'
       });

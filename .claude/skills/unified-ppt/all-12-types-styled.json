@@ -1,0 +1,294 @@
+{
+  "slides": [
+    {
+      "type": "title",
+      "props": {
+        "title": "12가지 슬라이드 타입",
+        "subtitle": "모두 커스텀 스타일 지원!"
+      },
+      "style": {
+        "background": "#1E3A8A",
+        "title": {
+          "color": "#FBBF24",
+          "fontSize": 54
+        },
+        "subtitle": {
+          "color": "#E5E7EB",
+          "fontSize": 26
+        }
+      }
+    },
+    {
+      "type": "content",
+      "props": {
+        "title": "Content 슬라이드",
+        "body": [
+          "배경, 악센트 바, 제목, 본문 모두 커스터마이징 가능",
+          "",
+          "각 요소의 색상, 폰트, 크기를 자유롭게 지정할 수 있습니다."
+        ]
+      },
+      "style": {
+        "background": "#F3F4F6",
+        "accentBar": {
+          "color": "#EF4444"
+        },
+        "title": {
+          "color": "#DC2626",
+          "fontSize": 36
+        },
+        "body": {
+          "color": "#374151",
+          "fontSize": 20
+        }
+      }
+    },
+    {
+      "type": "bullet",
+      "props": {
+        "title": "Bullet 슬라이드",
+        "bullets": [
+          { "text": "Primary 색상 불릿", "level": 0 },
+          { "text": "Secondary 색상 서브 불릿", "level": 1 },
+          { "text": "Accent 색상 불릿", "level": 0 },
+          { "text": "아이콘 타입도 변경 가능", "level": 1 }
+        ]
+      },
+      "style": {
+        "background": "#FFFFFF",
+        "accentBar": {
+          "color": "#10B981"
+        },
+        "title": {
+          "color": "#059669",
+          "fontSize": 32
+        },
+        "bullets": {
+          "primaryColor": "#10B981",
+          "secondaryColor": "#6B7280",
+          "fontSize": 18,
+          "iconType": "arrow"
+        }
+      }
+    },
+    {
+      "type": "section",
+      "props": {
+        "title": "Section 슬라이드",
+        "number": "01"
+      },
+      "style": {
+        "background": "#7C3AED",
+        "title": {
+          "color": "#FFFFFF",
+          "fontSize": 48
+        }
+      }
+    },
+    {
+      "type": "twoColumn",
+      "props": {
+        "title": "TwoColumn 슬라이드",
+        "leftContent": "왼쪽 컬럼\n\n배경과 텍스트 색상 커스터마이징",
+        "rightContent": "오른쪽 컬럼\n\n각 컬럼마다 다른 스타일 적용 가능"
+      },
+      "style": {
+        "background": "#FEF3C7",
+        "title": {
+          "color": "#92400E",
+          "fontSize": 32
+        },
+        "leftColumn": {
+          "backgroundColor": "#FCD34D",
+          "textColor": "#78350F"
+        },
+        "rightColumn": {
+          "backgroundColor": "#FBBF24",
+          "textColor": "#78350F"
+        }
+      }
+    },
+    {
+      "type": "image",
+      "props": {
+        "title": "Image 슬라이드",
+        "caption": "캡션 색상, 크기, 정렬, 이탤릭 커스터마이징"
+      },
+      "style": {
+        "background": "#F9FAFB",
+        "title": {
+          "color": "#1F2937",
+          "fontSize": 32
+        },
+        "caption": {
+          "color": "#6B7280",
+          "fontSize": 16,
+          "align": "center",
+          "italic": true
+        }
+      }
+    },
+    {
+      "type": "chart",
+      "props": {
+        "title": "Chart 슬라이드",
+        "chartType": "bar",
+        "data": [
+          {
+            "name": "2021",
+            "labels": ["1월", "2월", "3월"],
+            "values": [10, 20, 30]
+          }
+        ]
+      },
+      "style": {
+        "background": "#FFFFFF",
+        "title": {
+          "color": "#1F2937",
+          "fontSize": 32
+        },
+        "chartColors": ["#3B82F6", "#10B981", "#F59E0B"],
+        "gridColor": "#E5E7EB",
+        "showLegend": true,
+        "showAxisLines": true
+      }
+    },
+    {
+      "type": "table",
+      "props": {
+        "title": "Table 슬라이드",
+        "headers": ["항목", "2023", "2024"],
+        "rows": [
+          ["매출", "100억", "150억"],
+          ["이익", "20억", "35억"]
+        ]
+      },
+      "style": {
+        "background": "#F9FAFB",
+        "title": {
+          "color": "#1F2937",
+          "fontSize": 32
+        },
+        "header": {
+          "backgroundColor": "#1E40AF",
+          "textColor": "#FFFFFF",
+          "fontSize": 16
+        },
+        "body": {
+          "backgroundColor": "#FFFFFF",
+          "textColor": "#374151",
+          "fontSize": 14
+        },
+        "border": {
+          "color": "#D1D5DB",
+          "width": 1
+        }
+      }
+    },
+    {
+      "type": "quote",
+      "props": {
+        "quote": "디자인은 단순히 어떻게 보이고 느껴지느냐가 아니다. 어떻게 작동하느냐다.",
+        "author": "스티브 잡스"
+      },
+      "style": {
+        "background": "#FEF2F2",
+        "quote": {
+          "color": "#991B1B",
+          "fontSize": 34,
+          "fontFamily": "Georgia",
+          "italic": true,
+          "align": "center"
+        },
+        "author": {
+          "color": "#6B7280",
+          "fontSize": 20,
+          "align": "right"
+        }
+      }
+    },
+    {
+      "type": "comparison",
+      "props": {
+        "title": "Comparison 슬라이드",
+        "leftLabel": "Before",
+        "rightLabel": "After",
+        "leftContent": "기존 방식:\n\n• 수동 작업\n• 시간 소요\n• 일관성 부족",
+        "rightContent": "개선 방식:\n\n• 자동화\n• 빠른 처리\n• 브랜드 일관성"
+      },
+      "style": {
+        "background": "#F3F4F6",
+        "title": {
+          "color": "#1F2937",
+          "fontSize": 32
+        },
+        "leftContent": {
+          "color": "#DC2626",
+          "fontSize": 16
+        },
+        "rightContent": {
+          "color": "#059669",
+          "fontSize": 16
+        }
+      }
+    },
+    {
+      "type": "timeline",
+      "props": {
+        "title": "Timeline 슬라이드",
+        "items": [
+          {
+            "title": "Q1 2024",
+            "description": "프로젝트 시작"
+          },
+          {
+            "title": "Q2 2024",
+            "description": "개발 완료"
+          },
+          {
+            "title": "Q3 2024",
+            "description": "출시"
+          }
+        ]
+      },
+      "style": {
+        "background": "#FFFFFF",
+        "title": {
+          "color": "#1F2937",
+          "fontSize": 32
+        },
+        "node": {
+          "fillColor": "#DBEAFE",
+          "borderColor": "#3B82F6",
+          "borderWidth": 3
+        },
+        "itemTitle": {
+          "color": "#1E40AF",
+          "fontSize": 18
+        },
+        "itemDescription": {
+          "color": "#6B7280",
+          "fontSize": 14
+        }
+      }
+    },
+    {
+      "type": "thankYou",
+      "props": {
+        "message": "감사합니다!",
+        "contact": "12가지 타입 모두 스타일 지원 완료"
+      },
+      "style": {
+        "background": "#1F2937",
+        "message": {
+          "color": "#10B981",
+          "fontSize": 56
+        },
+        "contact": {
+          "color": "#9CA3AF",
+          "fontSize": 20
+        }
+      }
+    }
+  ]
+}

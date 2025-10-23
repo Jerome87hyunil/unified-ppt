@@ -71,7 +71,7 @@ function parseCSSVariables(css) {
 function extractColorScheme(variables) {
   const colors = {};
 
-  // 직접 매핑
+  // 직접 매핑 (기존 로직)
   if (variables['primary']) colors.primary = parseColor(variables['primary']);
   if (variables['secondary']) colors.secondary = parseColor(variables['secondary']);
   if (variables['accent']) colors.accent = parseColor(variables['accent']);
@@ -80,6 +80,33 @@ function extractColorScheme(variables) {
   if (variables['muted']) colors.muted = parseColor(variables['muted']);
   if (variables['destructive']) colors.destructive = parseColor(variables['destructive']);
   if (variables['border']) colors.border = parseColor(variables['border']);
+
+  // 자동 감지: color 관련 변수 찾기
+  const colorKeywords = ['color', 'background', 'bg', 'foreground', 'fg', 'text', 'border', 'primary', 'secondary', 'accent', 'success', 'warning', 'error', 'info', 'danger', 'muted', 'link'];
+
+  Object.entries(variables).forEach(([key, value]) => {
+    const lowerKey = key.toLowerCase();
+
+    // 이미 추가된 경우 스킵
+    if (colors[key]) return;
+
+    // color 관련 키워드 포함 여부 확인
+    const isColorVar = colorKeywords.some(keyword => lowerKey.includes(keyword));
+
+    // 값이 색상 포맷인지 확인 (HEX, RGB, HSL)
+    const isColorValue = value.trim().startsWith('#') ||
+                        value.trim().startsWith('rgb') ||
+                        value.trim().startsWith('hsl') ||
+                        /^[\d.]+\s+[\d.]+%\s+[\d.]+%$/.test(value.trim());
+
+    if (isColorVar && isColorValue) {
+      const parsedColor = parseColor(value);
+      if (parsedColor && parsedColor.startsWith('#')) {
+        colors[key] = parsedColor;
+        console.log(`  🎨 자동 감지: --${key} → ${parsedColor}`);
+      }
+    }
+  });
 
   return colors;
 }
@@ -90,9 +117,24 @@ function extractColorScheme(variables) {
 function extractFontScheme(variables) {
   const fonts = {};
 
+  // 직접 매핑
   if (variables['font-sans']) fonts.sans = variables['font-sans'];
   if (variables['font-serif']) fonts.serif = variables['font-serif'];
   if (variables['font-mono']) fonts.mono = variables['font-mono'];
+
+  // 자동 감지: font 관련 변수 찾기
+  Object.entries(variables).forEach(([key, value]) => {
+    const lowerKey = key.toLowerCase();
+
+    // 이미 추가된 경우 스킵
+    if (fonts[key]) return;
+
+    // font 관련 키워드 확인
+    if (lowerKey.includes('font') && !lowerKey.includes('size') && !lowerKey.includes('weight')) {
+      fonts[key] = value;
+      console.log(`  📝 자동 감지: --${key} → ${value}`);
+    }
+  });
 
   return fonts;
 }
@@ -334,11 +376,30 @@ async function analyzeDesignSystem(projectRoot) {
   // 3. 컬러 스킴 추출
   console.log('\n🌈 컬러 팔레트 추출 중...');
   const colors = extractColorScheme(cssVariables);
+  console.log(`  ✅ ${Object.keys(colors).length}개 컬러 발견`);
+  if (Object.keys(colors).length > 0) {
+    Object.entries(colors).slice(0, 5).forEach(([key, value]) => {
+      console.log(`     • ${key}: ${value}`);
+    });
+    if (Object.keys(colors).length > 5) {
+      console.log(`     ... ${Object.keys(colors).length - 5}개 더`);
+    }
+  } else {
+    console.log('  ⚠️ CSS 변수에서 컬러를 찾을 수 없음 - 기본 테마 사용');
+  }
 
   // 4. 폰트 시스템 추출
   console.log('\n📝 폰트 시스템 추출 중...');
   const rawFonts = extractFontScheme(cssVariables);
   const fonts = normalizeFontsForPPT(rawFonts);
+  console.log(`  ✅ ${Object.keys(fonts).length}개 폰트 발견`);
+  if (Object.keys(fonts).length > 0) {
+    Object.entries(fonts).forEach(([key, value]) => {
+      console.log(`     • ${key}: ${value}`);
+    });
+  } else {
+    console.log('  ⚠️ CSS 변수에서 폰트를 찾을 수 없음 - Arial 사용');
+  }
 
   // 5. 스페이싱 시스템 추출
   console.log('\n📏 스페이싱 시스템 추출 중...');

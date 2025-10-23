@@ -304,3 +304,145 @@ node --version
 - Each slide type is self-contained with its own layout logic
 - Master layouts eliminate code duplication
 - Visual helpers provide consistent design elements
+
+### 커스텀 스타일 적용
+
+**v3.0의 새로운 기능**: JSON에서 각 슬라이드마다 개별 스타일 지정 가능!
+
+각 슬라이드에 `style` 속성을 추가하여 배경색, 텍스트 색상, 폰트 크기 등을 자유롭게 커스터마이징할 수 있습니다.
+
+#### Title 슬라이드 스타일 예제
+```json
+{
+  "type": "title",
+  "props": {
+    "title": "프로젝트 제목",
+    "subtitle": "부제목"
+  },
+  "style": {
+    "background": "#5ec9a7",
+    "title": {
+      "color": "#FFFFFF",
+      "fontSize": 52,
+      "fontFamily": "Arial",
+      "align": "center"
+    },
+    "subtitle": {
+      "color": "#E5E7EB",
+      "fontSize": 26
+    }
+  }
+}
+```
+
+#### Bullet 슬라이드 스타일 예제
+```json
+{
+  "type": "bullet",
+  "props": {
+    "title": "주요 기능",
+    "bullets": [
+      { "text": "첫 번째 항목", "level": 0 },
+      { "text": "두 번째 항목", "level": 0 }
+    ]
+  },
+  "style": {
+    "accentBar": {
+      "color": "#5ec9a7"
+    },
+    "title": {
+      "color": "#1c3f57",
+      "fontSize": 32
+    },
+    "bullets": {
+      "primaryColor": "#5ec9a7",
+      "secondaryColor": "#1c3f57",
+      "fontSize": 18,
+      "iconType": "arrow"
+    }
+  }
+}
+```
+
+#### Content 슬라이드 스타일 예제
+```json
+{
+  "type": "content",
+  "props": {
+    "title": "내용 제목",
+    "body": ["첫 번째 줄", "두 번째 줄"]
+  },
+  "style": {
+    "background": "#F3F4F6",
+    "accentBar": {
+      "color": "#EF4444"
+    },
+    "title": {
+      "color": "#DC2626",
+      "fontSize": 36
+    },
+    "body": {
+      "color": "#374151",
+      "fontSize": 20
+    }
+  }
+}
+```
+
+#### Section 슬라이드 스타일 예제
+```json
+{
+  "type": "section",
+  "props": {
+    "title": "섹션 제목",
+    "number": "01"
+  },
+  "style": {
+    "background": "#1c3f57",
+    "title": {
+      "color": "#5ec9a7",
+      "fontSize": 44
+    }
+  }
+}
+```
+
+### 스타일 우선순위
+
+1. **JSON의 `style` 속성** (최우선) - 개별 슬라이드 커스터마이징
+2. **프로젝트 CSS 변수** (자동 추출) - 브랜드 일관성 유지
+3. **테마 기본값** (professional/minimal/corporate) - 최종 fallback
+
+### 예제 파일
+
+- **`slides-with-styles.json`**: 다양한 스타일 옵션 예제 (6가지 슬라이드 타입)
+- **`test-slides.json`**: 코나래 프로젝트 브랜드 컬러 적용 예제
+
+### 실행 예제
+
+```bash
+cd .claude/skills/unified-ppt
+
+# 스타일 예제로 PPT 생성
+node scripts/unified-ppt.js --slides slides-with-styles.json --output styled.pptx
+
+# 코나래 브랜드 스타일로 PPT 생성
+node scripts/unified-ppt.js \
+  --project /Users/jerome/dev/konarae_new \
+  --slides test-slides.json \
+  --output konarae.pptx
+```
+
+### 지원되는 스타일 속성 전체 목록
+
+| 슬라이드 타입 | 스타일 속성 |
+|--------------|------------|
+| **title** | `background`, `title.{color,fontSize,fontFamily,align}`, `subtitle.{color,fontSize,align}` |
+| **content** | `background`, `accentBar.color`, `title.{color,fontSize}`, `body.{color,fontSize,fontFamily,align}` |
+| **bullet** | `background`, `accentBar.color`, `title.{color,fontSize}`, `bullets.{primaryColor,secondaryColor,mutedColor,fontSize,fontFamily,lineHeight,iconType}` |
+| **section** | `background`, `title.{color,fontSize}`, `badge.{backgroundColor,textColor}` |
+| **twoColumn** | `background`, `title.{color,fontSize}`, `leftColumn.{backgroundColor,textColor}`, `rightColumn.{backgroundColor,textColor}` |
+| **thankYou** | `background`, `message.{color,fontSize}`, `contact.{color,fontSize}` |
+
+모든 색상은 HEX 포맷(`#RRGGBB`)을 사용합니다.
+
