@@ -6,6 +6,7 @@
 const PptxGenJS = require('pptxgenjs');
 const { createTheme } = require('./theme-system');
 const {
+  addAccentBar,
   addDivider,
   addSectionBadge,
   addStyledBullet,
@@ -116,7 +117,6 @@ function createContentSlide(pptx, props, theme, customStyle = {}) {
 
   // Accent bar (left) - use custom color if specified
   if (customStyle.accentBar !== false) {
-    const { addAccentBar } = require('./visual-helpers');
     const accentColor = customStyle.accentBar?.color || theme.colors.accent;
     const tempTheme = { ...theme, colors: { ...theme.colors, accent: accentColor } };
     addAccentBar(slide, 'left', tempTheme);
@@ -147,7 +147,6 @@ function createContentSlide(pptx, props, theme, customStyle = {}) {
   });
 
   // Title underline
-  const { addDivider } = require('./visual-helpers');
   const dividerColor = customStyle.divider?.color || theme.colors.accent;
   const tempThemeForDivider = { ...theme, colors: { ...theme.colors, accent: dividerColor } };
   addDivider(slide, 0.6, titleY + titleStyle.fontSize / 72 + 0.1, 8.5 * 0.3, tempThemeForDivider, 'medium');
@@ -212,7 +211,6 @@ function createBulletSlide(pptx, props, theme, customStyle = {}) {
 
   // Accent bar (left) - use custom color if specified
   if (customStyle.accentBar !== false) {
-    const { addAccentBar } = require('./visual-helpers');
     const accentColor = customStyle.accentBar?.color || theme.colors.accent;
     const tempTheme = { ...theme, colors: { ...theme.colors, accent: accentColor } };
     addAccentBar(slide, 'left', tempTheme);
@@ -243,7 +241,6 @@ function createBulletSlide(pptx, props, theme, customStyle = {}) {
   });
 
   // Title underline
-  const { addDivider } = require('./visual-helpers');
   const dividerColor = customStyle.divider?.color || theme.colors.accent;
   const tempThemeForDivider = { ...theme, colors: { ...theme.colors, accent: dividerColor } };
   addDivider(slide, 0.6, titleY + titleStyle.fontSize / 72 + 0.1, 8.5 * 0.3, tempThemeForDivider, 'medium');
